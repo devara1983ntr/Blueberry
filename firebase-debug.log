@@ -1258,3 +1258,115 @@
 [debug] [2025-11-23T12:23:09.838Z] > authorizing via signed-in user (alberteinstein9485@gmail.com)
 [debug] [2025-11-23T12:23:09.838Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
 [debug] [2025-11-23T12:23:09.839Z] > authorizing via signed-in user (alberteinstein9485@gmail.com)
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[debug] [2025-11-23T15:28:18.799Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-11-23T15:28:18.807Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-11-23T15:28:26.740Z] Running auto auth
+[debug] [2025-11-23T15:28:26.750Z] Running auto auth
+[debug] [2025-11-23T15:28:26.948Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:26.956Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:26.957Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:26.966Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:26.973Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:26.974Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:27.053Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:27.058Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:27.075Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/storage.googleapis.com [none]
+[debug] [2025-11-23T15:28:27.077Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/storage.googleapis.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.285Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebasedataconnect.googleapis.com [none]
+[debug] [2025-11-23T15:28:27.285Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.289Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/identitytoolkit.googleapis.com [none]
+[debug] [2025-11-23T15:28:27.289Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/identitytoolkit.googleapis.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.292Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/fcm.googleapis.com [none]
+[debug] [2025-11-23T15:28:27.292Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/fcm.googleapis.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.295Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/cloudfunctions.googleapis.com [none]
+[debug] [2025-11-23T15:28:27.296Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/cloudfunctions.googleapis.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.300Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseremoteconfig.googleapis.com [none]
+[debug] [2025-11-23T15:28:27.300Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseremoteconfig.googleapis.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.305Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseapphosting.googleapis.com [none]
+[debug] [2025-11-23T15:28:27.305Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.309Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseio.com [none]
+[debug] [2025-11-23T15:28:27.309Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseio.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.354Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:27.356Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:27.357Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:27.358Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:27.358Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:27.359Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:27.363Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:27.363Z] No OAuth tokens found
+[debug] [2025-11-23T15:28:27.364Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/storage.googleapis.com [none]
+[debug] [2025-11-23T15:28:27.364Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/storage.googleapis.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.368Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebasedataconnect.googleapis.com [none]
+[debug] [2025-11-23T15:28:27.368Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.374Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/identitytoolkit.googleapis.com [none]
+[debug] [2025-11-23T15:28:27.374Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/identitytoolkit.googleapis.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.384Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/fcm.googleapis.com [none]
+[debug] [2025-11-23T15:28:27.384Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/fcm.googleapis.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.390Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/cloudfunctions.googleapis.com [none]
+[debug] [2025-11-23T15:28:27.390Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/cloudfunctions.googleapis.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.393Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseremoteconfig.googleapis.com [none]
+[debug] [2025-11-23T15:28:27.394Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseremoteconfig.googleapis.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.397Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseapphosting.googleapis.com [none]
+[debug] [2025-11-23T15:28:27.397Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseapphosting.googleapis.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:27.400Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseio.com [none]
+[debug] [2025-11-23T15:28:27.400Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseio.com x-goog-quota-user=projects/blueberry-2be3c
+[debug] [2025-11-23T15:28:28.462Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseio.com 403
+[debug] [2025-11-23T15:28:28.463Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseio.com [omitted]
+[debug] [2025-11-23T15:28:28.526Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/storage.googleapis.com 403
+[debug] [2025-11-23T15:28:28.526Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/storage.googleapis.com [omitted]
+[debug] [2025-11-23T15:28:28.530Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseapphosting.googleapis.com 403
+[debug] [2025-11-23T15:28:28.530Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2025-11-23T15:28:28.535Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebasedataconnect.googleapis.com 403
+[debug] [2025-11-23T15:28:28.535Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2025-11-23T15:28:28.538Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebasedataconnect.googleapis.com 403
+[debug] [2025-11-23T15:28:28.539Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebasedataconnect.googleapis.com [omitted]
+[debug] [2025-11-23T15:28:28.542Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/identitytoolkit.googleapis.com 403
+[debug] [2025-11-23T15:28:28.542Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/identitytoolkit.googleapis.com [omitted]
+[debug] [2025-11-23T15:28:28.543Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/cloudfunctions.googleapis.com 403
+[debug] [2025-11-23T15:28:28.544Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/cloudfunctions.googleapis.com [omitted]
+[debug] [2025-11-23T15:28:28.546Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/storage.googleapis.com 403
+[debug] [2025-11-23T15:28:28.547Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/storage.googleapis.com [omitted]
+[debug] [2025-11-23T15:28:28.551Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseio.com 403
+[debug] [2025-11-23T15:28:28.552Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseio.com [omitted]
+[debug] [2025-11-23T15:28:28.555Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseremoteconfig.googleapis.com 403
+[debug] [2025-11-23T15:28:28.556Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseremoteconfig.googleapis.com [omitted]
+[debug] [2025-11-23T15:28:28.558Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/identitytoolkit.googleapis.com 403
+[debug] [2025-11-23T15:28:28.558Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/identitytoolkit.googleapis.com [omitted]
+[debug] [2025-11-23T15:28:28.559Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/fcm.googleapis.com 403
+[debug] [2025-11-23T15:28:28.559Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/fcm.googleapis.com [omitted]
+[debug] [2025-11-23T15:28:28.560Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/cloudfunctions.googleapis.com 403
+[debug] [2025-11-23T15:28:28.561Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/cloudfunctions.googleapis.com [omitted]
+[debug] [2025-11-23T15:28:28.561Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/fcm.googleapis.com 403
+[debug] [2025-11-23T15:28:28.561Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/fcm.googleapis.com [omitted]
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[debug] [2025-11-23T15:28:28.575Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-11-23T15:28:28.575Z] > authorizing via signed-in user (alberteinstein9485@gmail.com)
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[debug] [2025-11-23T15:28:28.589Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-11-23T15:28:28.590Z] > authorizing via signed-in user (alberteinstein9485@gmail.com)
+[debug] [2025-11-23T15:28:28.620Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseremoteconfig.googleapis.com 403
+[debug] [2025-11-23T15:28:28.620Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseremoteconfig.googleapis.com [omitted]
+[debug] [2025-11-23T15:28:28.635Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseapphosting.googleapis.com 403
+[debug] [2025-11-23T15:28:28.635Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/blueberry-2be3c/services/firebaseapphosting.googleapis.com [omitted]
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[debug] [2025-11-23T15:28:28.667Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-11-23T15:28:28.674Z] > authorizing via signed-in user (alberteinstein9485@gmail.com)
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[debug] [2025-11-23T15:28:28.680Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-11-23T15:28:28.680Z] > authorizing via signed-in user (alberteinstein9485@gmail.com)
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[debug] [2025-11-23T15:28:28.699Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-11-23T15:28:28.701Z] > authorizing via signed-in user (alberteinstein9485@gmail.com)
+[error] Failed to fetch Firebase Project from Studio Workspace because WORKSPACE_SLUG environment variable is empty
+[debug] [2025-11-23T15:28:28.705Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/userinfo.email"]
+[debug] [2025-11-23T15:28:28.706Z] > authorizing via signed-in user (alberteinstein9485@gmail.com)
