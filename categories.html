@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories - Blueberry</title>
+    <meta name="description" content="Browse video categories on Blueberry. Explore trending and featured categories for adult content.">
+    <meta name="keywords" content="video categories, adult categories, blueberry categories, streaming">
+    <meta property="og:title" content="Categories - Blueberry">
+    <meta property="og:description" content="Browse video categories on Blueberry. Explore trending and featured categories for adult content.">
+    <meta property="og:image" content="/manifest-icon-512.png">
+    <meta property="og:url" content="https://blueberry-app.com/categories.html">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="/">Blueberry</a>
+            </div>
+            <search-bar></search-bar>
+            <button class="hamburger" id="hamburger-menu">☰</button>
+        </nav>
+    </header>
+
+    <navigation-drawer id="nav-drawer"></navigation-drawer>
+
+    <main>
+        <section class="categories-section">
+            <h1>Browse Categories</h1>
+            <error-boundary>
+                <category-grid></category-grid>
+            </error-boundary>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Blueberry. All rights reserved.</p>
+    </footer>
+
+    <script src="src/components/error-boundary.js"></script>
+    <script type="module" src="src/components/search-bar.js"></script>
+    <script src="src/components/video-thumbnail.js"></script>
+    <script type="module" src="src/components/navigation-drawer.js"></script>
+    <script src="src/components/category-grid.js"></script>
+    <script src="src/pages/categories.js"></script>
+</body>
+</html>

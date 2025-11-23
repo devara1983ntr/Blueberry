@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help & Support - Blueberry</title>
+    <meta name="description" content="Get help and support for Blueberry. Find answers to frequently asked questions or contact our support team.">
+    <meta name="keywords" content="help, support, FAQ, blueberry support, contact">
+    <meta property="og:title" content="Help & Support - Blueberry">
+    <meta property="og:description" content="Get help and support for Blueberry. Find answers to frequently asked questions or contact our support team.">
+    <meta property="og:image" content="/manifest-icon-512.png">
+    <meta property="og:url" content="https://blueberry-app.com/help.html">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="/">Blueberry</a>
+            </div>
+            <search-bar></search-bar>
+            <button class="hamburger" id="hamburger-menu">☰</button>
+        </nav>
+    </header>
+
+    <navigation-drawer id="nav-drawer"></navigation-drawer>
+
+    <main class="help-container">
+        <section class="hero-section">
+            <h1>Help & Support</h1>
+            <p>Find answers to common questions or get in touch with our support team.</p>
+        </section>
+
+        <section class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-accordion">
+                <div class="faq-item">
+                    <button class="faq-question">How do I create an account?</button>
+                    <div class="faq-answer">
+                        <p>Click on the "Login" button in the navigation menu and select "Sign Up" to create a new account with your email and password.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">How do I search for videos?</button>
+                    <div class="faq-answer">
+                        <p>Use the search bar at the top of the page. You can search by title, performer, or tags. Advanced filters are available on the search page.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">How do I add videos to my favorites?</button>
+                    <div class="faq-answer">
+                        <p>While watching a video, click the heart icon (❤️) to add it to your favorites. You can view your favorites from your profile page.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">What are parental controls?</button>
+                    <div class="faq-answer">
+                        <p>Parental controls allow you to restrict access to content with a PIN. You can enable this feature in your settings and set a PIN to protect sensitive content.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">How do I report inappropriate content?</button>
+                    <div class="faq-answer">
+                        <p>If you encounter inappropriate content, please use the contact form below to report it. Include the video URL and a description of the issue.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question">Can I download videos?</button>
+                    <div class="faq-answer">
+                        <p>No, downloading videos is not supported. All content is streamed directly from external sources.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-section">
+            <h2>Contact Us</h2>
+            <p>Can't find what you're looking for? Send us a message and we'll get back to you as soon as possible.</p>
+            <div class="contact-info">
+                <p><strong>Email:</strong> support@blueberry.com</p>
+                <p><strong>Response Time:</strong> Within 24-48 hours</p>
+            </div>
+            <form class="contact-form">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject:</label>
+                    <select id="subject" name="subject" required>
+                        <option value="">Select a subject</option>
+                        <option value="account">Account Issues</option>
+                        <option value="technical">Technical Support</option>
+                        <option value="content">Content Related</option>
+                        <option value="billing">Billing</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Blueberry. All rights reserved. | <a href="terms.html">Terms of Service</a> | <a href="privacy.html">Privacy Policy</a></p>
+    </footer>
+
+    <script type="module" src="src/components/search-bar.js"></script>
+    <script type="module" src="src/components/navigation-drawer.js"></script>
+    <script src="src/pages/help.js"></script>
+</body>
+</html>

@@ -1,0 +1,461 @@
+// src/components/search-bar.js
+import { loadAllVideos } from '../utils/data-loader.js';
+import { i18n } from '../utils/i18n.js';
+
+// Simple debounce utility
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+class SearchBar extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.allTags = new Set();
+        this.allCategories = new Set();
+        this.allPerformers = new Set();
+        this.isLoadingSuggestions = false;
+        this.filtersOpen = false;
+        this.selectedIndex = -1;
+        this.currentSuggestions = [];
+
+        this.updateTexts = () => {
+            const input = this.shadowRoot.querySelector('.search-input');
+            if (input) input.placeholder = i18n.t('search.placeholder');
+            const filtersBtn = this.shadowRoot.querySelector('.filters-button');
+            if (filtersBtn) filtersBtn.title = i18n.t('search.filters');
+            const durationLabel = this.shadowRoot.querySelector('label[for="duration-filter"]');
+            if (durationLabel) durationLabel.textContent = i18n.t('search.durationLabel');
+            const categoryLabel = this.shadowRoot.querySelector('label[for="category-filter"]');
+            if (categoryLabel) categoryLabel.textContent = i18n.t('search.categoryLabel');
+            const categoryInput = this.shadowRoot.querySelector('#category-filter');
+            if (categoryInput) categoryInput.placeholder = i18n.t('search.categoryPlaceholder');
+            const applyBtn = this.shadowRoot.querySelector('.apply-filters');
+            if (applyBtn) applyBtn.textContent = i18n.t('search.applyFilters');
+            // Options
+            const durationSelect = this.shadowRoot.querySelector('#duration-filter');
+            if (durationSelect) {
+                durationSelect.querySelector('option[value=""]').textContent = i18n.t('search.durationAny');
+                durationSelect.querySelector('option[value="short"]').textContent = i18n.t('search.durationShort');
+                durationSelect.querySelector('option[value="medium"]').textContent = i18n.t('search.durationMedium');
+                durationSelect.querySelector('option[value="long"]').textContent = i18n.t('search.durationLong');
+            }
+        };
+
+        this.languageChangedHandler = () => this.updateTexts();
+    }
+
+    async connectedCallback() {
+        this.render();
+        this.loadSuggestions();
+        this.setupEventListeners();
+        this.updateTexts();
+        window.addEventListener('languageChanged', this.languageChangedHandler);
+    }
+
+    disconnectedCallback() {
+        // Note: Event listeners are added to shadow DOM elements, cleanup would require storing references
+        // For now, relying on garbage collection when component is removed
+        window.removeEventListener('languageChanged', this.languageChangedHandler);
+    }
+
+    fuzzyMatch(text, query) {
+        const textLower = text.toLowerCase();
+        const queryLower = query.toLowerCase();
+        // Simple fuzzy match: check if all query characters appear in order in text
+        let queryIndex = 0;
+        for (let i = 0; i < textLower.length && queryIndex < queryLower.length; i++) {
+            if (textLower[i] === queryLower[queryIndex]) {
+                queryIndex++;
+            }
+        }
+        return queryIndex === queryLower.length;
+    }
+
+    render() {
+        this.shadowRoot.innerHTML = `
+            <style>
+                :host {
+                    display: flex;
+                    align-items: center;
+                    position: relative;
+                    width: 100%;
+                    max-width: 500px;
+                }
+
+                .search-container {
+                    display: flex;
+                    align-items: center;
+                    width: 100%;
+                    background: rgba(255, 255, 255, 0.1);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    border-radius: 25px;
+                    padding: 8px 16px;
+                    transition: all 0.3s ease;
+                }
+
+                .search-container:focus-within {
+                    background: rgba(255, 255, 255, 0.15);
+                    border-color: rgba(255, 255, 255, 0.4);
+                    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+                }
+
+                .search-input {
+                    flex: 1;
+                    background: transparent;
+                    border: none;
+                    outline: none;
+                    color: white;
+                    font-size: 16px;
+                    padding: 0;
+                }
+
+                .search-input::placeholder {
+                    color: rgba(255, 255, 255, 0.7);
+                }
+
+                .search-button {
+                    background: none;
+                    border: none;
+                    color: white;
+                    cursor: pointer;
+                    padding: 4px;
+                    border-radius: 50%;
+                    transition: background-color 0.2s;
+                }
+
+                .search-button:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                }
+
+                .filters-button {
+                    background: none;
+                    border: none;
+                    color: rgba(255, 255, 255, 0.7);
+                    cursor: pointer;
+                    padding: 4px 8px;
+                    margin-left: 8px;
+                    border-radius: 4px;
+                    font-size: 14px;
+                    transition: all 0.2s;
+                }
+
+                .filters-button:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    color: white;
+                }
+
+                .autocomplete-dropdown {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    right: 0;
+                    background: rgba(0, 0, 0, 0.9);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    border-radius: 8px;
+                    max-height: 200px;
+                    overflow-y: auto;
+                    z-index: 1000;
+                    display: none;
+                    role: "listbox";
+                    aria-label: "Search suggestions";
+                }
+
+                .autocomplete-item {
+                    padding: 12px 16px;
+                    color: white;
+                    cursor: pointer;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                    transition: background-color 0.2s;
+                    role: "option";
+                }
+
+                .autocomplete-item:hover,
+                .autocomplete-item.selected {
+                    background: rgba(255, 255, 255, 0.1);
+                }
+
+                .autocomplete-item:last-child {
+                    border-bottom: none;
+                }
+
+                .filters-dropdown {
+                    position: absolute;
+                    top: 100%;
+                    right: 0;
+                    background: rgba(0, 0, 0, 0.9);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    border-radius: 8px;
+                    padding: 16px;
+                    min-width: 250px;
+                    z-index: 1000;
+                    display: none;
+                }
+
+                .filter-group {
+                    margin-bottom: 12px;
+                }
+
+                .filter-group label {
+                    display: block;
+                    color: white;
+                    font-size: 14px;
+                    margin-bottom: 4px;
+                }
+
+                .filter-group select,
+                .filter-group input {
+                    width: 100%;
+                    padding: 8px;
+                    background: rgba(255, 255, 255, 0.1);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    border-radius: 4px;
+                    color: white;
+                    font-size: 14px;
+                }
+
+                .filter-group select option {
+                    background: #000;
+                    color: white;
+                }
+
+                .apply-filters {
+                    width: 100%;
+                    padding: 8px;
+                    background: #1a73e8;
+                    border: none;
+                    border-radius: 4px;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 14px;
+                    margin-top: 8px;
+                }
+
+                .apply-filters:hover {
+                    background: #1557b0;
+                }
+
+                @media (max-width: 768px) {
+                    :host {
+                        max-width: 100%;
+                    }
+
+                    .autocomplete-dropdown,
+                    .filters-dropdown {
+                        left: 0;
+                        right: 0;
+                    }
+                }
+            </style>
+
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search videos..." autocomplete="off" aria-label="Search videos" aria-expanded="false" aria-haspopup="listbox">
+                <button class="search-button" title="Search" aria-label="Search">🔍</button>
+                <button class="filters-button" title="Filters" aria-label="Open filters">⚙️</button>
+            </div>
+
+            <ul class="autocomplete-dropdown" role="listbox"></ul>
+
+            <div class="filters-dropdown">
+                <div class="filter-group">
+                    <label for="duration-filter">Duration:</label>
+                    <select id="duration-filter">
+                        <option value="">Any</option>
+                        <option value="short">Short (< 5 min)</option>
+                        <option value="medium">Medium (5-20 min)</option>
+                        <option value="long">Long (> 20 min)</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="category-filter">Category:</label>
+                    <input type="text" id="category-filter" placeholder="Filter by category">
+                </div>
+                <button class="apply-filters">Apply Filters</button>
+            </div>
+        `;
+    }
+
+    async loadSuggestions() {
+        if (this.isLoadingSuggestions || this.allTags.size > 0) return;
+
+        this.isLoadingSuggestions = true;
+        try {
+            const videos = await loadAllVideos();
+            videos.forEach(video => {
+                // Load tags
+                video.tags.forEach(tag => {
+                    if (tag.trim()) {
+                        this.allTags.add(tag.trim());
+                    }
+                });
+                // Load categories
+                video.categories.forEach(category => {
+                    if (category.trim()) {
+                        this.allCategories.add(category.trim());
+                    }
+                });
+                // Load performers
+                if (video.performer && video.performer.trim()) {
+                    this.allPerformers.add(video.performer.trim());
+                }
+            });
+        } catch (error) {
+            console.error('Error loading suggestions:', error);
+        } finally {
+            this.isLoadingSuggestions = false;
+        }
+    }
+
+    setupEventListeners() {
+        const input = this.shadowRoot.querySelector('.search-input');
+        const searchButton = this.shadowRoot.querySelector('.search-button');
+        const filtersButton = this.shadowRoot.querySelector('.filters-button');
+        const autocompleteDropdown = this.shadowRoot.querySelector('.autocomplete-dropdown');
+        const filtersDropdown = this.shadowRoot.querySelector('.filters-dropdown');
+        const applyFiltersButton = this.shadowRoot.querySelector('.apply-filters');
+
+        // Search on button click or Enter
+        const performSearch = () => {
+            const query = input.value.trim();
+            if (query) {
+                this.navigateToSearch(query);
+            }
+        };
+
+        searchButton.addEventListener('click', performSearch);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Autocomplete
+        input.addEventListener('input', (e) => {
+            const query = e.target.value.trim().toLowerCase();
+            input.setAttribute('aria-expanded', query.length >= 2 ? 'true' : 'false');
+            if (query.length < 2) {
+                autocompleteDropdown.style.display = 'none';
+                this.selectedIndex = -1;
+                return;
+            }
+
+            const tagSuggestions = Array.from(this.allTags)
+                .filter(tag => this.fuzzyMatch(tag, query))
+                .map(tag => ({ type: 'tag', value: tag }));
+
+            const categorySuggestions = Array.from(this.allCategories)
+                .filter(category => this.fuzzyMatch(category, query))
+                .map(category => ({ type: 'category', value: category }));
+
+            const performerSuggestions = Array.from(this.allPerformers)
+                .filter(performer => this.fuzzyMatch(performer, query))
+                .map(performer => ({ type: 'performer', value: performer }));
+
+            this.currentSuggestions = [
+                ...tagSuggestions.slice(0, 4),
+                ...categorySuggestions.slice(0, 3),
+                ...performerSuggestions.slice(0, 3)
+            ].slice(0, 10);
+
+            if (this.currentSuggestions.length > 0) {
+                autocompleteDropdown.innerHTML = this.currentSuggestions
+                    .map((suggestion, index) => {
+                        const typeLabel = suggestion.type.charAt(0).toUpperCase() + suggestion.type.slice(1);
+                        return `<li class="autocomplete-item" data-index="${index}" role="option">${typeLabel}: ${suggestion.value}</li>`;
+                    })
+                    .join('');
+                autocompleteDropdown.style.display = 'block';
+                this.selectedIndex = -1;
+            } else {
+                autocompleteDropdown.style.display = 'none';
+            }
+        });
+
+        // Keyboard navigation for autocomplete
+        input.addEventListener('keydown', (e) => {
+            if (autocompleteDropdown.style.display === 'none') return;
+
+            const items = autocompleteDropdown.querySelectorAll('.autocomplete-item');
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                this.selectedIndex = (this.selectedIndex + 1) % items.length;
+                this.updateSelectedItem(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                this.selectedIndex = this.selectedIndex <= 0 ? items.length - 1 : this.selectedIndex - 1;
+                this.updateSelectedItem(items);
+            } else if (e.key === 'Enter' && this.selectedIndex >= 0) {
+                e.preventDefault();
+                const selectedSuggestion = this.currentSuggestions[this.selectedIndex];
+                input.value = selectedSuggestion.value;
+                autocompleteDropdown.style.display = 'none';
+                this.navigateToSearch(selectedSuggestion.value);
+            } else if (e.key === 'Escape') {
+                autocompleteDropdown.style.display = 'none';
+                this.selectedIndex = -1;
+            }
+        });
+
+        // Click on autocomplete items
+        autocompleteDropdown.addEventListener('click', (e) => {
+            if (e.target.classList.contains('autocomplete-item')) {
+                const index = parseInt(e.target.dataset.index);
+                const selectedSuggestion = this.currentSuggestions[index];
+                input.value = selectedSuggestion.value;
+                autocompleteDropdown.style.display = 'none';
+                this.navigateToSearch(selectedSuggestion.value);
+            }
+        });
+
+        // Filters toggle
+        filtersButton.addEventListener('click', () => {
+            this.filtersOpen = !this.filtersOpen;
+            filtersDropdown.style.display = this.filtersOpen ? 'block' : 'none';
+            filtersButton.setAttribute('aria-expanded', this.filtersOpen);
+        });
+
+        // Apply filters
+        applyFiltersButton.addEventListener('click', () => {
+            const duration = this.shadowRoot.querySelector('#duration-filter').value;
+            const category = this.shadowRoot.querySelector('#category-filter').value.trim();
+            // For now, just log the filters. In a real app, you'd apply them to search results.
+            console.log('Applying filters:', { duration, category });
+            filtersDropdown.style.display = 'none';
+            this.filtersOpen = false;
+            filtersButton.setAttribute('aria-expanded', 'false');
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!this.contains(e.target)) {
+                autocompleteDropdown.style.display = 'none';
+                filtersDropdown.style.display = 'none';
+                this.filtersOpen = false;
+                filtersButton.setAttribute('aria-expanded', 'false');
+                input.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    updateSelectedItem(items) {
+        items.forEach((item, index) => {
+            item.classList.toggle('selected', index === this.selectedIndex);
+        });
+    }
+
+    navigateToSearch(query) {
+        // Navigate to search page with query
+        window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+    }
+}
+
+customElements.define('search-bar', SearchBar);
