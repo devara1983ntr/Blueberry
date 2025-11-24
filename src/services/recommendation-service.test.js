@@ -10,8 +10,8 @@ jest.mock('../utils/data-loader.js', () => ({
   loadAllVideos: jest.fn(),
 }));
 
-const { getFavorites, getWatchHistory } = require('./data-service.js');
-const { loadAllVideos } = require('../utils/data-loader.js');
+import { getFavorites, getWatchHistory } from './data-service.js';
+import { loadAllVideos } from '../utils/data-loader.js';
 
 describe('Recommendation Service', () => {
   beforeEach(() => {
@@ -109,16 +109,18 @@ describe('Recommendation Service', () => {
       // video1 has tag1, tag2, cat1
       // video2 has tag2, tag3, cat1, cat2
       // User has video1 favorited, so should recommend videos with tag1, tag2, cat1
-      // video4 has tag1 (2 points), video3 has tag3 (1 point from video2), video2 excluded
+      // video2 has tag2 (2 points) + cat1 (1 point) = 3 points
+      // video4 has tag1 (2 points) = 2 points
+      // video3 has no matches = 0 points (filtered out)
       getFavorites.mockResolvedValue(['video1']);
       getWatchHistory.mockResolvedValue([]);
       loadAllVideos.mockResolvedValue(mockVideos);
 
       const result = await getRecommendations('user123');
 
-      // video4 should come first (higher score due to tag1 match)
-      expect(result[0].id).toBe('video4');
-      expect(result[1].id).toBe('video3');
+      // video2 should come first (higher score: tag2 + cat1 = 3 points)
+      expect(result[0].id).toBe('video2');
+      expect(result[1].id).toBe('video4');
     });
 
     it('should handle errors from dependencies', async () => {

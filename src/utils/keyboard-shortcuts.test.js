@@ -182,13 +182,14 @@ describe('Keyboard Shortcuts', () => {
     it('should prevent default for registered shortcuts', () => {
       registerShortcut('space', mockCallback);
 
+      const preventDefaultSpy = jest.fn();
       const event = new KeyboardEvent('keydown', {
-        key: ' ',
-        preventDefault: jest.fn()
+        key: ' '
       });
+      event.preventDefault = preventDefaultSpy;
       document.dispatchEvent(event);
 
-      expect(event.preventDefault).toHaveBeenCalled();
+      expect(preventDefaultSpy).toHaveBeenCalled();
     });
 
     it('should not execute callback for unregistered shortcuts', () => {

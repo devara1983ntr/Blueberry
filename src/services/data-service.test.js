@@ -27,6 +27,8 @@ jest.mock('../config/firebase.js', () => ({
   db: {},
 }));
 
+import { db } from '../config/firebase.js';
+
 describe('Data Service', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -40,7 +42,7 @@ describe('Data Service', () => {
 
       await expect(addToFavorites('user123', 'video456')).resolves.toBeUndefined();
 
-      expect(doc).toHaveBeenCalledWith(require('../config/firebase.js').db, 'users', 'user123');
+      expect(doc).toHaveBeenCalledWith(db, 'users', 'user123');
       expect(updateDoc).toHaveBeenCalledWith(mockDocRef, {
         favorites: arrayUnion('video456')
       });
@@ -170,7 +172,7 @@ describe('Data Service', () => {
 
       await expect(addToWatchHistory('user123', 'video456')).resolves.toBeUndefined();
 
-      expect(collection).toHaveBeenCalledWith(require('../config/firebase.js').db, 'users', 'user123', 'watchHistory');
+      expect(collection).toHaveBeenCalledWith(db, 'users', 'user123', 'watchHistory');
       expect(doc).toHaveBeenCalledWith(mockCollectionRef, 'video456');
       expect(setDoc).toHaveBeenCalledWith(mockDocRef, expect.objectContaining({
         videoId: 'video456',

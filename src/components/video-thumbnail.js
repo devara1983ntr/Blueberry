@@ -1,3 +1,4 @@
+
 import '../components/toast.js';
 
 class VideoThumbnail extends HTMLElement {
@@ -92,17 +93,21 @@ class VideoThumbnail extends HTMLElement {
     setupLazyLoading() {
         if (this.observer) return;
 
-        this.observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && !this.isLoaded) {
-                    this.loadImage();
-                }
+        try {
+            this.observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !this.isLoaded) {
+                        this.loadImage();
+                    }
+                });
+            }, {
+                rootMargin: '50px' // Load 50px before entering viewport
             });
-        }, {
-            rootMargin: '50px' // Load 50px before entering viewport
-        });
 
-        this.observer.observe(this.picture);
+            this.observer.observe(this.picture);
+        } catch (error) {
+            console.warn('Failed to setup lazy loading:', error);
+        }
     }
 
     loadImage() {
@@ -129,3 +134,7 @@ class VideoThumbnail extends HTMLElement {
         };
     }
 }
+
+customElements.define('video-thumbnail', VideoThumbnail);
+
+export { VideoThumbnail };

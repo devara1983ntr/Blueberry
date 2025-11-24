@@ -38,14 +38,25 @@ describe('data-loader', () => {
                 }
             ];
 
-            fetch.mockResolvedValueOnce({
-                ok: true,
-                json: () => Promise.resolve(mockData)
+            // Mock fetch for all 1260 files, but only first file has data, others empty
+            fetch.mockImplementation((url) => {
+                if (url === 'data/videos_page_1.json') {
+                    return Promise.resolve({
+                        ok: true,
+                        json: () => Promise.resolve(mockData)
+                    });
+                } else {
+                    return Promise.resolve({
+                        ok: true,
+                        json: () => Promise.resolve([])
+                    });
+                }
             });
 
             const videos = await loadAllVideos();
 
-            expect(fetch).toHaveBeenCalledWith('full_data.json', { timeout: 10000 });
+            expect(fetch).toHaveBeenCalledTimes(1260);
+            expect(fetch).toHaveBeenCalledWith('data/videos_page_1.json', { timeout: 10000 });
             expect(videos).toHaveLength(2);
             expect(videos[0]).toEqual({
                 id: '0',

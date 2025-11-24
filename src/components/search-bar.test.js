@@ -1,4 +1,4 @@
-import '../components/search-bar.js';
+import { SearchBar } from '../components/search-bar.js';
 
 describe('SearchBar Component', () => {
   let searchBar;
@@ -9,33 +9,10 @@ describe('SearchBar Component', () => {
   let mockFiltersDropdown;
 
   beforeEach(() => {
-    searchBar = new SearchBar();
-    document.body.appendChild(searchBar);
-
-    // Mock shadow DOM elements
-    mockInput = {
-      value: '',
-      setAttribute: jest.fn(),
-      addEventListener: jest.fn(),
-      focus: jest.fn()
-    };
-    mockSearchButton = { addEventListener: jest.fn(), click: jest.fn() };
-    mockFiltersButton = {
-      addEventListener: jest.fn(),
-      setAttribute: jest.fn(),
-      title: ''
-    };
-    mockAutocompleteDropdown = {
-      style: { display: 'none' },
-      innerHTML: '',
-      addEventListener: jest.fn()
-    };
-    mockFiltersDropdown = {
-      style: { display: 'none' }
-    };
-
-    searchBar.shadowRoot = {
-      querySelector: jest.fn((selector) => {
+    // Mock HTMLElement.attachShadow before creating instance
+    const originalAttachShadow = HTMLElement.prototype.attachShadow;
+    const mockShadowRoot = {
+      querySelector: (selector) => {
         switch (selector) {
           case '.search-input': return mockInput;
           case '.search-button': return mockSearchButton;
@@ -49,9 +26,44 @@ describe('SearchBar Component', () => {
           case 'label[for="category-filter"]': return { textContent: '' };
           default: return null;
         }
-      }),
-      querySelectorAll: jest.fn(() => []),
+      },
+      querySelectorAll: () => [],
       addEventListener: jest.fn()
+    };
+
+    HTMLElement.prototype.attachShadow = jest.fn(function() {
+      this.shadowRoot = mockShadowRoot;
+      return mockShadowRoot;
+    });
+
+    searchBar = new SearchBar();
+
+    // Restore original attachShadow
+    HTMLElement.prototype.attachShadow = originalAttachShadow;
+
+    // Mock shadow DOM elements
+    mockInput = {
+      value: '',
+      setAttribute: jest.fn(),
+      addEventListener: jest.fn(),
+      focus: jest.fn(),
+      dispatchEvent: jest.fn()
+    };
+    mockSearchButton = { addEventListener: jest.fn(), click: jest.fn() };
+    mockFiltersButton = {
+      addEventListener: jest.fn(),
+      setAttribute: jest.fn(),
+      title: '',
+      click: jest.fn()
+    };
+    mockAutocompleteDropdown = {
+      style: { display: 'none' },
+      innerHTML: '',
+      addEventListener: jest.fn(),
+      querySelectorAll: jest.fn(() => [])
+    };
+    mockFiltersDropdown = {
+      style: { display: 'none' }
     };
 
     // Mock i18n
@@ -60,7 +72,6 @@ describe('SearchBar Component', () => {
   });
 
   afterEach(() => {
-    document.body.removeChild(searchBar);
     jest.clearAllMocks();
   });
 

@@ -54,12 +54,14 @@ describe('Age Verification', () => {
 
     it('should handle leap year birthdays correctly', () => {
       // February 29, 2004 (leap year) - person turns 18 on Feb 29, 2022
-      const today = new Date('2022-02-28');
-      jest.spyOn(Date.prototype, 'getFullYear').mockReturnValue(2022);
-      jest.spyOn(Date.prototype, 'getMonth').mockReturnValue(1); // February (0-indexed)
-      jest.spyOn(Date.prototype, 'getDate').mockReturnValue(28);
+      // On Feb 29, 2022, they turn 18
+      const originalDate = global.Date;
+      const mockToday = new Date('2022-02-29');
+      global.Date = jest.fn(() => mockToday);
 
       expect(verifyAge('2004-02-29')).toBe(true);
+
+      global.Date = originalDate;
     });
 
     it('should handle edge case of birthday today', () => {
@@ -86,7 +88,7 @@ describe('Age Verification', () => {
     });
 
     it('should throw error for invalid date format', () => {
-      expect(() => verifyAge('invalid-date')).toThrow('Invalid birth date format');
+      expect(() => verifyAge('invalid-date')).toThrow('Failed to verify age: Invalid birth date format');
     });
 
     it('should handle Date constructor errors', () => {
@@ -115,17 +117,34 @@ describe('Age Verification', () => {
     });
 
     it('should handle localStorage errors', () => {
+      const originalSetItem = localStorage.setItem;
+      const mockError = new Error('Storage quota exceeded');
       localStorage.setItem = jest.fn(() => {
-        throw new Error('Storage quota exceeded');
+        throw mockError;
       });
 
       expect(() => setAgeVerified(true)).toThrow(
         'Failed to set age verification: Storage quota exceeded'
       );
+
+      localStorage.setItem = originalSetItem;
     });
   });
 
   describe('promptAgeVerification', () => {
+    let originalPrompt;
+    let originalAlert;
+
+    beforeEach(() => {
+      originalPrompt = global.prompt;
+      originalAlert = global.alert;
+    });
+
+    afterEach(() => {
+      global.prompt = originalPrompt;
+      global.alert = originalAlert;
+    });
+
     it('should return true when user enters valid age 18+ date', async () => {
       const birthDate = new Date();
       birthDate.setFullYear(birthDate.getFullYear() - 20);

@@ -1,4 +1,4 @@
-import '../components/video-thumbnail.js';
+import { VideoThumbnail } from '../components/video-thumbnail.js';
 
 describe('VideoThumbnail Component', () => {
   let videoThumbnail;
@@ -8,13 +8,11 @@ describe('VideoThumbnail Component', () => {
   let mockObserver;
 
   beforeEach(() => {
-    videoThumbnail = new VideoThumbnail();
-    document.body.appendChild(videoThumbnail);
-
     // Mock shadow DOM elements
     mockContainer = {
       addEventListener: jest.fn(),
-      tabIndex: 0
+      tabIndex: 0,
+      dispatchEvent: jest.fn()
     };
     mockPicture = {
       dataset: { src: '' },
@@ -28,16 +26,26 @@ describe('VideoThumbnail Component', () => {
       classList: { add: jest.fn() }
     };
 
-    videoThumbnail.shadowRoot = {
-      querySelector: jest.fn((selector) => {
+    const mockShadowRoot = {
+      querySelector: (selector) => {
         switch (selector) {
           case '.thumbnail-container': return mockContainer;
           case 'picture': return mockPicture;
           case 'img': return mockImg;
           default: return null;
         }
-      })
+      },
+      appendChild: jest.fn(),
+      contains: jest.fn(() => true)
     };
+
+    // Mock attachShadow
+    HTMLElement.prototype.attachShadow = jest.fn(function() {
+      this.shadowRoot = mockShadowRoot;
+      return mockShadowRoot;
+    });
+
+    videoThumbnail = new VideoThumbnail();
 
     // Mock IntersectionObserver
     mockObserver = {
@@ -50,7 +58,6 @@ describe('VideoThumbnail Component', () => {
   });
 
   afterEach(() => {
-    document.body.removeChild(videoThumbnail);
     jest.clearAllMocks();
   });
 
@@ -128,6 +135,7 @@ describe('VideoThumbnail Component', () => {
 
     it('should add loaded class on successful load', () => {
       mockPicture.dataset.src = 'test-image.jpg';
+      videoThumbnail.setupLazyLoading(); // Set up observer
 
       videoThumbnail.loadImage();
       mockImg.onload();
@@ -161,12 +169,17 @@ describe('VideoThumbnail Component', () => {
   describe('Click Handling', () => {
     it('should handle click and navigate to video', () => {
       videoThumbnail.id = 'video123';
-      delete window.location;
-      window.location = { href: '' };
+      const originalHref = window.location.href;
+      Object.defineProperty(window.location, 'href', {
+        writable: true,
+        value: ''
+      });
 
       videoThumbnail.handleClick();
 
       expect(window.location.href).toBe('video.html?id=video123');
+
+      window.location.href = originalHref;
     });
 
     it('should not navigate if no id is set', () => {
@@ -180,6 +193,7 @@ describe('VideoThumbnail Component', () => {
     });
 
     it('should handle keyboard activation', () => {
+      videoThumbnail.connectedCallback(); // Set up event listeners
       const enterEvent = new KeyboardEvent('keydown', { key: 'Enter' });
       mockContainer.dispatchEvent(enterEvent);
 
@@ -197,6 +211,7 @@ describe('VideoThumbnail Component', () => {
   describe('Attribute Handling', () => {
     it('should set id attribute on connect', () => {
       videoThumbnail.setAttribute('id', 'test-video');
+      videoThumbnail.getAttribute = jest.fn(() => 'test-video');
 
       videoThumbnail.connectedCallback();
 

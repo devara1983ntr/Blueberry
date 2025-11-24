@@ -14,11 +14,13 @@ jest.mock('../config/firebase.js', () => ({
   },
 }));
 
+import { auth } from '../config/firebase.js';
+
 describe('Auth Service', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Reset auth currentUser
-    require('../config/firebase.js').auth.currentUser = null;
+    auth.currentUser = null;
   });
 
   describe('login', () => {
@@ -29,7 +31,7 @@ describe('Auth Service', () => {
       const result = await login('test@example.com', 'password123');
 
       expect(signInWithEmailAndPassword).toHaveBeenCalledWith(
-        require('../config/firebase.js').auth,
+        auth,
         'test@example.com',
         'password123'
       );
@@ -118,7 +120,7 @@ describe('Auth Service', () => {
       const result = await register('test@example.com', 'password123');
 
       expect(createUserWithEmailAndPassword).toHaveBeenCalledWith(
-        require('../config/firebase.js').auth,
+        auth,
         'test@example.com',
         'password123'
       );
@@ -145,7 +147,7 @@ describe('Auth Service', () => {
       const error = { code: 'auth/weak-password' };
       createUserWithEmailAndPassword.mockRejectedValue(error);
 
-      await expect(register('test@example.com', '123')).rejects.toThrow(
+      await expect(register('test@example.com', 'password123')).rejects.toThrow(
         'Password is too weak. Please choose a stronger password.'
       );
     });
@@ -156,7 +158,7 @@ describe('Auth Service', () => {
       signOut.mockResolvedValue();
 
       await expect(logout()).resolves.toBeUndefined();
-      expect(signOut).toHaveBeenCalledWith(require('../config/firebase.js').auth);
+      expect(signOut).toHaveBeenCalledWith(auth);
     });
 
     it('should handle network error during logout', async () => {
@@ -185,7 +187,7 @@ describe('Auth Service', () => {
       const result = onAuthStateChange(mockCallback);
 
       expect(onAuthStateChanged).toHaveBeenCalledWith(
-        require('../config/firebase.js').auth,
+        auth,
         mockCallback
       );
       expect(result).toBe(mockUnsubscribe);
@@ -195,7 +197,7 @@ describe('Auth Service', () => {
   describe('getCurrentUser', () => {
     it('should return current user from auth', () => {
       const mockUser = { uid: '123', email: 'test@example.com' };
-      require('../config/firebase.js').auth.currentUser = mockUser;
+      auth.currentUser = mockUser;
 
       const result = getCurrentUser();
 
@@ -203,7 +205,7 @@ describe('Auth Service', () => {
     });
 
     it('should return null when no user is logged in', () => {
-      require('../config/firebase.js').auth.currentUser = null;
+      auth.currentUser = null;
 
       const result = getCurrentUser();
 

@@ -1,7 +1,7 @@
  // Animation utilities
  import '../utils/data-loader.js';
  import '../components/toast.js';
- import { isAgeVerified, promptAgeVerification } from '../utils/age-verification.js';
+ import { isAgeVerified, setAgeVerified } from '../utils/age-verification.js';
  import { analytics } from '../config/firebase.js';
  import { logEvent } from 'firebase/analytics';
  import { db } from '../config/firebase.js';
@@ -91,20 +91,33 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Age verification
     const ageBanner = document.getElementById('age-restriction-banner');
+    const mainContent = document.getElementById('main-content');
     const confirmAgeBtn = document.getElementById('confirm-age');
     const denyAgeBtn = document.getElementById('deny-age');
 
-    if (!isAgeVerified()) {
+    const showLandingPage = async () => {
+        ageBanner.style.display = 'none';
+        mainContent.style.display = 'block';
+
+        // Load home page content after age verification
+        try {
+            await import('../pages/home.js');
+        } catch (error) {
+            console.error('Error loading home page:', error);
+        }
+    };
+
+    if (isAgeVerified()) {
+        showLandingPage();
+    } else {
         ageBanner.style.display = 'block';
+        mainContent.style.display = 'none';
     }
 
-    confirmAgeBtn.addEventListener('click', async () => {
-        const verified = await promptAgeVerification();
-        if (verified) {
-            ageBanner.style.display = 'none';
-        } else {
-            alert('Invalid age verification. Please try again.');
-        }
+    confirmAgeBtn.addEventListener('click', () => {
+        // Simple confirmation - user clicked "I am 18 or older"
+        setAgeVerified(true);
+        showLandingPage();
     });
 
     denyAgeBtn.addEventListener('click', () => {
@@ -132,44 +145,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Initialize scroll-triggered animations
     animationUtils.initParallax();
-
-    const trendingContainer = document.querySelector('.video-grid:nth-of-type(1) .grid-container');
-    const newReleasesContainer = document.querySelector('.video-grid:nth-of-type(2) .grid-container');
-    const featuredCategoriesContainer = document.querySelector('.video-grid:nth-of-type(3) .grid-container');
-
-    // Load video data
-    let videos = [];
-    try {
-        const { loadAllVideos } = await import('../utils/data-loader.js');
-        videos = await loadAllVideos();
-        // Limit to first 100 for performance
-        videos = videos.slice(0, 100);
-    } catch (error) {
-        console.error('Error loading video data:', error);
-        showToast('error', 'Failed to Load Videos', error.message);
-
-        // No fallback videos for production
-        videos = [];
-    }
-
-    const populateGrid = (container, items) => {
-        container.innerHTML = '';
-        items.forEach((item, index) => {
-            const videoThumbnail = document.createElement('video-thumbnail');
-            videoThumbnail.setAttribute('title', item.title);
-            videoThumbnail.setAttribute('thumbnail', item.thumbnail);
-            videoThumbnail.setAttribute('id', item.id);
-            videoThumbnail.classList.add('staggered-item');
-            container.appendChild(videoThumbnail);
-        });
-
-        animationUtils.animateStaggeredItems(container);
-    };
-
-    // Populate grids
-    populateGrid(trendingContainer, videos.slice(0, 12));
-    populateGrid(newReleasesContainer, videos.slice(12, 24));
-    populateGrid(featuredCategoriesContainer, videos.slice(24, 36));
 });
 
 // Global error monitoring

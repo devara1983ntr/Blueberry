@@ -71,18 +71,6 @@ document.pictureInPictureElement = jest.fn();
 // Mock HTMLElement for custom elements
 global.HTMLElement = class HTMLElement {
   constructor() {
-    this.attachShadow = jest.fn(() => ({
-      querySelector: jest.fn(),
-      querySelectorAll: jest.fn(),
-      appendChild: jest.fn(),
-      removeChild: jest.fn(),
-      contains: jest.fn(),
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
-      getElementById: jest.fn(),
-      style: {},
-    }));
     this.addEventListener = jest.fn();
     this.removeEventListener = jest.fn();
     this.dispatchEvent = jest.fn();

@@ -44,11 +44,11 @@ export function initShortcuts() {
  * @returns {void}
  */
 export function destroyShortcuts() {
-  if (!isInitialized) return;
-
-  document.removeEventListener('keydown', handleKeyDown);
+  if (isInitialized) {
+    document.removeEventListener('keydown', handleKeyDown);
+    isInitialized = false;
+  }
   shortcuts.clear();
-  isInitialized = false;
 }
 
 /**
@@ -86,7 +86,10 @@ function getKeyCombination(event) {
   if (event.altKey) parts.push('alt');
   if (event.shiftKey) parts.push('shift');
 
-  parts.push(event.key.toLowerCase());
+  let key = event.key.toLowerCase();
+  if (key === ' ') key = 'space';
+
+  parts.push(key);
 
   return parts.join('+');
 }

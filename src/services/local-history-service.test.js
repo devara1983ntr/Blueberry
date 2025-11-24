@@ -52,6 +52,7 @@ describe('Local History Service', () => {
     });
 
     it('should handle localStorage errors', () => {
+      const originalSetItem = localStorage.setItem;
       localStorage.setItem = jest.fn(() => {
         throw new Error('Storage quota exceeded');
       });
@@ -59,6 +60,8 @@ describe('Local History Service', () => {
       expect(() => addToLocalHistory('video123')).toThrow(
         'Failed to add video to local history: Storage quota exceeded'
       );
+
+      localStorage.setItem = originalSetItem;
     });
   });
 
@@ -110,6 +113,7 @@ describe('Local History Service', () => {
     });
 
     it('should handle localStorage errors', () => {
+      const originalRemoveItem = localStorage.removeItem;
       localStorage.removeItem = jest.fn(() => {
         throw new Error('Storage access denied');
       });
@@ -117,6 +121,8 @@ describe('Local History Service', () => {
       expect(() => clearLocalHistory()).toThrow(
         'Failed to clear local history: Storage access denied'
       );
+
+      localStorage.removeItem = originalRemoveItem;
     });
   });
 
@@ -149,6 +155,7 @@ describe('Local History Service', () => {
     });
 
     it('should handle localStorage errors', () => {
+      const originalSetItem = localStorage.setItem;
       localStorage.setItem = jest.fn(() => {
         throw new Error('Storage quota exceeded');
       });
@@ -156,6 +163,8 @@ describe('Local History Service', () => {
       expect(() => removeFromLocalHistory('video123')).toThrow(
         'Failed to remove video from local history: Storage quota exceeded'
       );
+
+      localStorage.setItem = originalSetItem;
     });
   });
 });

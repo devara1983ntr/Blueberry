@@ -11,6 +11,10 @@ class I18n {
             this.currentLanguage = stored;
         }
         await this.loadTranslations(this.currentLanguage);
+        // If translations failed to load and we fell back to English, update current language
+        if (this.currentLanguage !== 'en' && Object.keys(this.translations).length === 0) {
+            this.currentLanguage = 'en';
+        }
     }
 
     async setLanguage(lang) {
@@ -38,10 +42,8 @@ class I18n {
             this.translations = await response.json();
         } catch (error) {
             console.error('Error loading translations:', error);
-            // Fallback to English
-            if (lang !== 'en') {
-                await this.loadTranslations('en');
-            }
+            // Fallback to empty translations
+            this.translations = {};
         }
     }
 

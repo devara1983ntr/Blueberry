@@ -65,7 +65,7 @@
     <navigation-drawer id="nav-drawer"></navigation-drawer>
 
     <error-boundary id="main-error-boundary">
-        <main id="main-content">
+        <main id="main-content" style="display: none;">
             <section class="hero">
                 <div class="featured-video parallax-bg" id="featured-video">
                     <!-- Featured video will be dynamically inserted here -->
@@ -84,30 +84,15 @@
             </section>
 
             <section class="video-grid">
-                <h2>Trending</h2>
+                <h2>All Videos</h2>
                 <error-boundary>
-                    <div class="grid-container" id="trending-grid">
+                    <div class="grid-container" id="main-video-grid">
                         <!-- Video thumbnails will be dynamically inserted here -->
                     </div>
                 </error-boundary>
-            </section>
-
-            <section class="video-grid">
-                <h2>New Releases</h2>
-                <error-boundary>
-                    <div class="grid-container" id="new-releases-grid">
-                        <!-- Video thumbnails will be dynamically inserted here -->
-                    </div>
-                </error-boundary>
-            </section>
-
-            <section class="video-grid">
-                <h2>Featured Categories</h2>
-                <error-boundary>
-                    <div class="grid-container" id="featured-categories-grid">
-                        <!-- Category thumbnails will be dynamically inserted here -->
-                    </div>
-                </error-boundary>
+                <div id="pagination-container">
+                    <!-- Pagination will be dynamically inserted here -->
+                </div>
             </section>
         </main>
     </error-boundary>
@@ -122,7 +107,6 @@
     <script type="module" src="src/components/navigation-drawer.js"></script>
     <script type="module" src="src/components/error-boundary.js"></script>
     <script type="module" src="src/components/video-thumbnail.js"></script>
-    <script type="module" src="src/pages/home.js"></script>
     <script type="module" src="main.js"></script>
 
 </body>

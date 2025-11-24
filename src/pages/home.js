@@ -1,6 +1,11 @@
 import '../components/loading-spinner.js';
 import '../components/toast.js';
+import '../components/pagination.js';
 import { getCurrentUser, onAuthStateChange } from '../services/auth-service.js';
+
+let allVideos = [];
+let currentPage = 1;
+const itemsPerPage = 24;
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Hamburger menu toggle
@@ -10,46 +15,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         navDrawer.toggle();
     });
 
-    // Show loading spinners in grids
-    const trendingGrid = document.getElementById('trending-grid');
-    const newReleasesGrid = document.getElementById('new-releases-grid');
-    const featuredCategoriesGrid = document.getElementById('featured-categories-grid');
+    // Show loading spinner
+    const mainGrid = document.getElementById('main-video-grid');
+    const paginationContainer = document.getElementById('pagination-container');
 
-    const showLoadingSpinners = () => {
-        trendingGrid.innerHTML = '<loading-spinner size="medium" style="circular"></loading-spinner>';
-        newReleasesGrid.innerHTML = '<loading-spinner size="medium" style="circular"></loading-spinner>';
-        featuredCategoriesGrid.innerHTML = '<loading-spinner size="medium" style="circular"></loading-spinner>';
+    const showLoadingSpinner = () => {
+        mainGrid.innerHTML = '<loading-spinner size="medium" style="circular"></loading-spinner>';
+        paginationContainer.innerHTML = '';
     };
 
-    const hideLoadingSpinners = () => {
-        // Spinners will be replaced by content
-    };
-
-    showLoadingSpinners();
+    showLoadingSpinner();
 
     // Determine max videos based on auth status
     const maxVideos = getCurrentUser() ? null : 2000;
 
     // Load video data using dynamic import for code splitting
-    let videos = [];
     try {
         const { loadAllVideos } = await import('../utils/data-loader.js');
-        videos = await loadAllVideos(maxVideos);
+        allVideos = await loadAllVideos(maxVideos);
     } catch (error) {
         console.error('Error loading video data:', error);
         showToast('error', 'Failed to Load Videos', error.message);
 
         // Show error message in UI
-        const errorMsg = document.createElement('div');
-        errorMsg.style.cssText = 'grid-column: 1 / -1; text-align: center; color: #dc3545; padding: 1rem;';
-        errorMsg.textContent = 'Unable to load video content. Please check your connection and try again.';
-        trendingGrid.parentNode.insertBefore(errorMsg, trendingGrid);
+        mainGrid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #dc3545; padding: 1rem;">Unable to load video content. Please check your connection and try again.</div>';
+        return;
     }
 
     // Render featured video
     const featuredContainer = document.getElementById('featured-video');
-    if (videos.length > 0) {
-        const featured = videos[0];
+    if (allVideos.length > 0) {
+        const featured = allVideos[0];
         featuredContainer.innerHTML = `
             <img src="${featured.thumbnail}" alt="${featured.title}">
             <button class="play-button">▶</button>
@@ -57,29 +53,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
     }
 
-    // Render grids (variables already declared above)
-
-    const populateGrid = (container, items) => {
-        container.innerHTML = '';
-        items.forEach(item => {
-            const videoThumbnail = document.createElement('video-thumbnail');
-            videoThumbnail.setAttribute('title', item.title);
-            videoThumbnail.setAttribute('thumbnail', item.thumbnail);
-            videoThumbnail.setAttribute('id', item.id);
-            container.appendChild(videoThumbnail);
-        });
-    };
-
-    // Trending: first 12
-    populateGrid(trendingGrid, videos.slice(0, 12));
-
-    // New Releases: next 12
-    populateGrid(newReleasesGrid, videos.slice(12, 24));
-
-    // Featured Categories: for simplicity, another 12, or filter by category
-    // Since categories are in tags, perhaps videos with 'Brunette' or something
-    // For now, just next 12
-    populateGrid(featuredCategoriesGrid, videos.slice(24, 36));
+    // Display videos with pagination
+    displayVideos();
 
     // Handle login banner
     const loginBanner = document.getElementById('login-banner');
@@ -95,3 +70,49 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Listen for auth state changes to update banner
     onAuthStateChange(updateBanner);
 });
+
+function displayVideos() {
+    const mainGrid = document.getElementById('main-video-grid');
+    const paginationContainer = document.getElementById('pagination-container');
+
+    if (allVideos.length === 0) {
+        mainGrid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #666; padding: 1rem;">No videos available.</div>';
+        paginationContainer.innerHTML = '';
+        return;
+    }
+
+    // Paginate
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const pageVideos = allVideos.slice(start, end);
+
+    // Display videos
+    mainGrid.innerHTML = '';
+    pageVideos.forEach(video => {
+        const videoThumbnail = document.createElement('video-thumbnail');
+        videoThumbnail.setAttribute('title', video.title);
+        videoThumbnail.setAttribute('thumbnail', video.thumbnail);
+        videoThumbnail.setAttribute('id', video.id);
+        videoThumbnail.addEventListener('click', () => {
+            window.location.href = `video.html?id=${video.id}`;
+        });
+        mainGrid.appendChild(videoThumbnail);
+    });
+
+    // Pagination
+    paginationContainer.innerHTML = '';
+    if (allVideos.length > itemsPerPage) {
+        const pagination = document.createElement('blueberry-pagination');
+        pagination.setAttribute('total-items', allVideos.length);
+        pagination.setAttribute('items-per-page', itemsPerPage);
+        pagination.setAttribute('current-page', currentPage);
+        pagination.setAttribute('mode', 'numbered');
+        pagination.addEventListener('page-change', (e) => {
+            currentPage = e.detail.page;
+            displayVideos();
+            // Scroll to top of grid
+            mainGrid.scrollIntoView({ behavior: 'smooth' });
+        });
+        paginationContainer.appendChild(pagination);
+    }
+}

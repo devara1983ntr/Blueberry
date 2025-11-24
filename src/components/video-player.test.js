@@ -6,36 +6,59 @@ describe('VideoPlayer Component', () => {
   let mockAdapter;
 
   beforeEach(() => {
-    // Mock HTMLElement.attachShadow before creating instance
-    const originalAttachShadow = HTMLElement.prototype.attachShadow;
-    HTMLElement.prototype.attachShadow = jest.fn(() => ({
-      querySelector: jest.fn((selector) => {
-        switch (selector) {
-          case 'iframe': return mockIframe;
-          case '.play-pause': return { addEventListener: jest.fn(), click: jest.fn() };
-          case '.progress-bar': return { addEventListener: jest.fn(), value: 0 };
-          case '.volume': return { addEventListener: jest.fn(), click: jest.fn() };
-          case '.volume-slider': return { addEventListener: jest.fn(), value: 1 };
-          case '.fullscreen': return { addEventListener: jest.fn(), click: jest.fn() };
-          case '.quality-btn': return { textContent: 'HD', addEventListener: jest.fn() };
-          case '.dropdown-content': return { classList: { remove: jest.fn(), toggle: jest.fn() }, querySelectorAll: jest.fn(() => []) };
-          case '.subtitles-btn': return { classList: { toggle: jest.fn() }, addEventListener: jest.fn() };
-          case '.speed-display': return { textContent: '1x' };
-          case '.playlist-panel': return { classList: { toggle: jest.fn(), remove: jest.fn(), contains: jest.fn(() => false) } };
-          case '.watch-later-panel': return { classList: { toggle: jest.fn(), remove: jest.fn(), contains: jest.fn(() => false) } };
-          case '.playlist-items': return { innerHTML: '', appendChild: jest.fn() };
-          case '.watch-later-items': return { innerHTML: '', appendChild: jest.fn() };
-          default: return null;
+    // Create mock elements
+    const mockElements = {
+      'iframe': mockIframe,
+      '.play-pause': { addEventListener: jest.fn(), click: jest.fn() },
+      '.progress-bar': { addEventListener: jest.fn(), value: 0 },
+      '.volume': { addEventListener: jest.fn(), click: jest.fn() },
+      '.volume-slider': { addEventListener: jest.fn(), value: 1 },
+      '.fullscreen': { addEventListener: jest.fn() },
+      '.quality-btn': { textContent: 'HD', addEventListener: jest.fn() },
+      '.dropdown-content': { classList: { remove: jest.fn(), toggle: jest.fn() }, querySelectorAll: jest.fn(() => []) },
+      '.subtitles-btn': { classList: { toggle: jest.fn() }, addEventListener: jest.fn() },
+      '.speed-display': { textContent: '1x' },
+      '.speed-down': { addEventListener: jest.fn() },
+      '.speed-up': { addEventListener: jest.fn() },
+      '.pip-btn': { addEventListener: jest.fn() },
+      '.theater-btn': { addEventListener: jest.fn() },
+      '.mini-player-btn': { addEventListener: jest.fn() },
+      '.loop-btn': { classList: { toggle: jest.fn() }, addEventListener: jest.fn() },
+      '.autoplay-btn': { classList: { toggle: jest.fn() }, addEventListener: jest.fn() },
+      '.screenshot-btn': { addEventListener: jest.fn() },
+      '.share-timestamp-btn': { addEventListener: jest.fn() },
+      '.playlist-btn': { addEventListener: jest.fn() },
+      '.watch-later-btn': { addEventListener: jest.fn() },
+      '.close-playlist': { addEventListener: jest.fn() },
+      '.close-watch-later': { addEventListener: jest.fn() },
+      '.playlist-panel': { classList: { toggle: jest.fn(), remove: jest.fn(), contains: jest.fn(() => false) } },
+      '.watch-later-panel': { classList: { toggle: jest.fn(), remove: jest.fn(), contains: jest.fn(() => false) } },
+      '.playlist-items': { innerHTML: '', appendChild: jest.fn() },
+      '.watch-later-items': { innerHTML: '', appendChild: jest.fn() },
+    };
+
+    // Create mock shadow root
+    const mockShadowRoot = {
+      querySelector: (selector) => mockElements[selector] || null,
+      querySelectorAll: (selector) => {
+        if (selector === '.quality-option') {
+          return [{ dataset: { quality: 'auto' }, classList: { toggle: jest.fn() } }];
         }
-      }),
-      querySelectorAll: jest.fn(() => []),
+        return [];
+      },
       appendChild: jest.fn(),
-      contains: jest.fn(() => true)
-    }));
+      contains: jest.fn(() => true),
+      removeChild: jest.fn()
+    };
+
+    // Define attachShadow method on HTMLElement prototype
+    HTMLElement.prototype.attachShadow = jest.fn(function() {
+      this.shadowRoot = mockShadowRoot;
+      return mockShadowRoot;
+    });
 
     // Create a new VideoPlayer instance
     videoPlayer = new VideoPlayer();
-    document.body.appendChild(videoPlayer);
 
     // Mock the iframe and adapter
     mockIframe = {};
@@ -72,13 +95,9 @@ describe('VideoPlayer Component', () => {
     videoPlayer.loadSettings = jest.fn();
     videoPlayer.saveSettings = jest.fn();
     videoPlayer.updateUI = jest.fn();
-
-    // Restore original attachShadow
-    HTMLElement.prototype.attachShadow = originalAttachShadow;
   });
 
   afterEach(() => {
-    document.body.removeChild(videoPlayer);
     jest.clearAllMocks();
   });
 

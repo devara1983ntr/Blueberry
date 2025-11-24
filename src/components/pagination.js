@@ -125,6 +125,9 @@ class BlueberryPagination extends HTMLElement {
                 html += `<button class="page-number ${active}" data-page="${i}" aria-label="Go to page ${i}">${i}</button>`;
             }
 
+            // Next button
+            const nextDisabled = this.currentPage >= totalPages;
+            html += `<button class="next" ${nextDisabled ? 'disabled' : ''} aria-label="Next page">Next</button>`;
         }
 
         this.shadowRoot.innerHTML = html;
