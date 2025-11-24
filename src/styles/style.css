@@ -1,0 +1,143 @@
+@import 'variables.css';
+@import 'card.css';
+
+/* Layout & Grid */
+.container {
+  max-width: 1400px; /* Wider for streaming feel */
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+/* Header / Nav */
+header {
+  background-color: transparent;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  transition: background-color var(--transition-medium);
+}
+
+header.scrolled {
+  background-color: var(--bg-primary); /* Solid black on scroll */
+  box-shadow: var(--shadow-nav);
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+  padding: 0 4%;
+}
+
+.logo a {
+  font-size: 1.8rem;
+  color: var(--text-accent);
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.nav-links {
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.nav-links a {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.nav-links a.active, .nav-links a:hover {
+  color: var(--text-primary);
+}
+
+/* Hero Section */
+.hero {
+  height: 80vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: -100px; /* Overlap with content */
+}
+
+.hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+}
+
+.hero-content {
+  padding-left: 4%;
+  max-width: 600px;
+}
+
+.hero-title {
+  font-size: 4rem;
+  line-height: 1.1;
+  margin-bottom: var(--spacing-md);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-description {
+  font-size: 1.2rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Categories / Carousels */
+.category-row {
+  margin-bottom: var(--spacing-xl);
+  padding: 0 4%;
+}
+
+.category-title {
+  font-size: 1.4rem;
+  margin-bottom: var(--spacing-md);
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.category-row:hover .category-title {
+  color: var(--text-primary);
+}
+
+.video-carousel {
+  display: flex;
+  gap: var(--spacing-sm);
+  overflow-x: auto;
+  padding-bottom: var(--spacing-md);
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.video-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.video-carousel .video-card {
+  min-width: 250px;
+  flex: 0 0 auto;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .nav-links {
+    display: none; /* Needs hamburger menu */
+  }
+
+  .video-carousel .video-card {
+    min-width: 160px;
+  }
+}

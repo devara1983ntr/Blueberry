@@ -1,12 +1,13 @@
 // src/pages/search.js
 import { loadAllVideos } from '../utils/data-loader.js';
 import '../components/pagination.js';
+import '../components/search-bar.js';
+import '../components/navigation-drawer.js';
 
 let allVideos = [];
 let filteredVideos = [];
 let currentQuery = '';
 let currentCategory = '';
-let currentSort = 'relevance';
 let currentPage = 1;
 const itemsPerPage = 24;
 
@@ -14,168 +15,97 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Hamburger menu toggle
     const hamburger = document.getElementById('hamburger-menu');
     const navDrawer = document.getElementById('nav-drawer');
-    hamburger.addEventListener('click', () => {
-        navDrawer.toggle();
-    });
+    if (hamburger) hamburger.addEventListener('click', () => navDrawer.toggle());
 
-    // Load videos
-    allVideos = await loadAllVideos();
+    // Load videos - optimization note: loading ALL videos is heavy.
+    // Ideally this should be server-side search.
+    // For now, we load a subset or try to handle it.
+    // Given the previous refactor to 'loadAllVideos' warning, let's load a larger chunk for search demo
+    // or just rely on what we can get.
+    // Real implementation would require a dedicated search endpoint.
+    // We will attempt to load a reasonable amount for client-side search simulation (e.g., 5000)
+    allVideos = await loadAllVideos(5000);
 
     // Get URL params
     const urlParams = new URLSearchParams(window.location.search);
     currentQuery = urlParams.get('q') || '';
     currentCategory = urlParams.get('category') || '';
-    const urlDuration = urlParams.get('duration') || '';
 
-    // Set title
-    const searchTitle = document.getElementById('search-title');
+    // Update Title
+    const searchTitle = document.getElementById('search-results-title');
     if (currentCategory) {
-        searchTitle.textContent = `Videos in "${currentCategory}"`;
+        searchTitle.textContent = `${currentCategory} Videos`;
     } else if (currentQuery) {
-        searchTitle.textContent = `Search results for "${currentQuery}"`;
+        searchTitle.textContent = `Results for "${currentQuery}"`;
+    } else {
+        searchTitle.textContent = 'All Videos';
     }
 
-    // Set filters from URL
-    if (urlDuration) {
-        document.getElementById('duration-filter').value = urlDuration;
-    }
-    if (currentCategory) {
-        document.getElementById('category-filter').value = currentCategory;
-    }
-
-    // Sort
-    const sortSelect = document.getElementById('sort-select');
-    sortSelect.addEventListener('change', () => {
-        currentSort = sortSelect.value;
-        currentPage = 1;
-        applyFiltersAndDisplay();
-    });
-
-    // Advanced filters
-    const advancedFiltersBtn = document.getElementById('advanced-filters-btn');
-    const advancedFilters = document.getElementById('advanced-filters');
-    advancedFiltersBtn.addEventListener('click', () => {
-        advancedFilters.style.display = advancedFilters.style.display === 'none' ? 'block' : 'none';
-    });
-
-    const applyFiltersBtn = document.getElementById('apply-filters-btn');
-    applyFiltersBtn.addEventListener('click', () => {
-        currentPage = 1;
-        applyFiltersAndDisplay();
-    });
-
-    // Initial display
     applyFiltersAndDisplay();
 });
 
 function applyFiltersAndDisplay() {
-    // Filter videos
     filteredVideos = filterVideos(allVideos, currentQuery, currentCategory);
-
-    // Apply advanced filters
-    const durationFilter = document.getElementById('duration-filter').value;
-    const categoryFilter = document.getElementById('category-filter').value.trim();
-
-    if (durationFilter) {
-        filteredVideos = filteredVideos.filter(video => {
-            const duration = parseDuration(video.duration);
-            if (durationFilter === 'short') return duration < 300;
-            if (durationFilter === 'medium') return duration >= 300 && duration <= 1200;
-            if (durationFilter === 'long') return duration > 1200;
-            return true;
-        });
-    }
-
-    if (categoryFilter) {
-        filteredVideos = filteredVideos.filter(video =>
-            video.categories.some(cat => cat.toLowerCase().includes(categoryFilter.toLowerCase()))
-        );
-    }
-
-    // Sort
-    sortVideos(filteredVideos, currentSort);
-
-    // Display
     displayResults();
 }
 
 function filterVideos(videos, query, category) {
+    let result = videos;
+
     if (category) {
-        return videos.filter(video =>
+        result = result.filter(video =>
             video.categories.some(cat => cat.toLowerCase() === category.toLowerCase())
         );
     }
 
-    if (!query) return videos;
-
-    const lowerQuery = query.toLowerCase();
-    return videos.filter(video =>
-        video.title.toLowerCase().includes(lowerQuery) ||
-        video.tags.some(tag => tag.toLowerCase().includes(lowerQuery)) ||
-        video.categories.some(cat => cat.toLowerCase().includes(lowerQuery)) ||
-        (video.performer && video.performer.toLowerCase().includes(lowerQuery))
-    );
-}
-
-function sortVideos(videos, sort) {
-    videos.sort((a, b) => {
-        if (sort === 'date') {
-            // Assuming no date, sort by id or random
-            return a.id.localeCompare(b.id);
-        } else if (sort === 'views') {
-            return parseInt(b.views || 0) - parseInt(a.views || 0);
-        } else {
-            // Relevance: for now, keep order
-            return 0;
-        }
-    });
-}
-
-function parseDuration(duration) {
-    // Parse duration like "10:30" to seconds
-    const parts = duration.split(':');
-    if (parts.length === 2) {
-        return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    if (query) {
+        const lowerQuery = query.toLowerCase();
+        result = result.filter(video =>
+            video.title.toLowerCase().includes(lowerQuery) ||
+            video.tags.some(tag => tag.toLowerCase().includes(lowerQuery)) ||
+            (video.performer && video.performer.toLowerCase().includes(lowerQuery))
+        );
     }
-    return 0;
+
+    return result;
 }
 
 function displayResults() {
-    const resultsInfo = document.getElementById('results-info');
     const resultsGrid = document.getElementById('results-grid');
-    const noResults = document.getElementById('no-results');
-    const pagination = document.getElementById('pagination');
+    const paginationElement = document.getElementById('pagination');
 
     if (filteredVideos.length === 0) {
-        resultsInfo.textContent = '';
-        resultsGrid.innerHTML = '';
-        pagination.innerHTML = '';
-        noResults.style.display = 'block';
+        resultsGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; margin-top: 2rem; color: var(--text-secondary);">No videos found matching your criteria.</p>';
+        paginationElement.innerHTML = '';
         return;
     }
-
-    noResults.style.display = 'none';
-    resultsInfo.textContent = `Showing ${filteredVideos.length} results`;
 
     // Paginate
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     const pageVideos = filteredVideos.slice(start, end);
 
-    // Display
     resultsGrid.innerHTML = '';
     pageVideos.forEach(video => {
-        const videoThumbnail = document.createElement('video-thumbnail');
-        videoThumbnail.setAttribute('title', video.title);
-        videoThumbnail.setAttribute('thumbnail', video.thumbnail);
-        videoThumbnail.addEventListener('click', () => {
+        const card = document.createElement('div');
+        card.className = 'video-card';
+        card.innerHTML = `
+            <img src="${video.thumbnail}" loading="lazy" alt="${video.title}">
+            <div class="duration">${video.duration}</div>
+            <div class="content">
+                <h3>${video.title}</h3>
+                <div class="meta">
+                    <span>${video.views || '0'} views</span>
+                </div>
+            </div>
+        `;
+        card.addEventListener('click', () => {
             window.location.href = `video.html?id=${video.id}`;
         });
-        resultsGrid.appendChild(videoThumbnail);
+        resultsGrid.appendChild(card);
     });
 
-    // Pagination
-    const paginationElement = document.getElementById('pagination');
+    // Pagination Component
     paginationElement.innerHTML = '';
     if (filteredVideos.length > itemsPerPage) {
         const pagination = document.createElement('blueberry-pagination');
@@ -186,6 +116,7 @@ function displayResults() {
         pagination.addEventListener('page-change', (e) => {
             currentPage = e.detail.page;
             displayResults();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
         paginationElement.appendChild(pagination);
     }

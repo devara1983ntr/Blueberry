@@ -3,112 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blueberry - Adult Video Streaming</title>
+    <title>Blueberry - Premium Streaming</title>
     <meta name="description" content="Discover and stream high-quality adult videos on Blueberry. Explore trending content, new releases, and featured categories in a user-friendly interface.">
-    <meta name="keywords" content="adult videos, streaming, porn, blueberry, video platform, entertainment">
-    <meta property="og:title" content="Blueberry - Adult Video Streaming">
-    <meta property="og:description" content="Discover and stream high-quality adult videos on Blueberry. Explore trending content, new releases, and featured categories.">
-    <meta property="og:image" content="/manifest-icon-512.png">
-    <meta property="og:url" content="https://blueberry-app.com">
-    <meta property="og:type" content="website">
-    <link rel="preload" href="style.css" as="style">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="src/styles/main.css">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="src/assets/logo.svg" type="image/svg+xml">
-    <link rel="preload" href="src/components/video-thumbnail.js" as="script">
-    <link rel="preload" href="src/pages/home.js" as="script">
 
-    <!-- Firebase CDN -->
-    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js"></script>
+    <link rel="stylesheet" href="src/styles/variables.css">
+    <link rel="stylesheet" href="src/styles/card.css">
+    <link rel="stylesheet" href="src/styles/style.css">
+
+    <link rel="icon" href="src/assets/logo.svg" type="image/svg+xml">
+
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+
+    <script type="module" src="src/components/navigation-drawer.js"></script>
+    <script type="module" src="src/components/search-bar.js"></script>
+    <script type="module" src="src/pages/home.js"></script>
 </head>
 <body>
 
-    <!-- Age Restriction Banner -->
-    <div id="age-restriction-banner" class="age-restriction-banner" style="display: none;" role="banner" aria-labelledby="age-warning-title" aria-describedby="age-warning-desc">
-        <div class="age-restriction-content">
-            <p id="age-warning-desc">This website contains adult content. You must be 18 years or older to access this site. By continuing, you confirm you meet the age requirement.</p>
-            <div class="age-buttons">
-                <button id="confirm-age" class="age-button confirm" aria-label="Confirm I am 18 or older">I am 18 or older</button>
-                <button id="deny-age" class="age-button deny" aria-label="I am under 18">I am under 18</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cookie Consent Banner -->
-    <div id="cookie-consent-banner" class="cookie-consent-banner" style="display: none;" role="dialog" aria-labelledby="cookie-title" aria-describedby="cookie-desc">
-        <div class="cookie-consent-content">
-            <p id="cookie-desc">This website uses cookies to enhance your experience. By continuing to use this site, you agree to our use of cookies.</p>
-            <div class="cookie-buttons">
-                <a href="privacy.html" class="cookie-link" aria-label="Read our privacy policy">Privacy Policy</a>
-                <button id="accept-cookies" class="cookie-accept-btn" aria-label="Accept cookies and close this banner">Accept</button>
-                <button id="decline-cookies" class="cookie-decline-btn" aria-label="Decline cookies and close this banner">Decline</button>
-            </div>
-        </div>
-    </div>
-
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-    <header>
+    <header id="main-header">
         <nav>
             <div class="logo">
-                <a href="/">
-                    <img src="src/assets/logo.svg" alt="Blueberry Logo" width="200" height="60">
-                </a>
+                <a href="/">BLUEBERRY</a>
             </div>
-            <search-bar></search-bar>
-            <button class="hamburger" id="hamburger-menu" aria-label="Open navigation menu" aria-expanded="false">☰</button>
+
+            <div class="nav-links">
+                <a href="/" class="active">Home</a>
+                <a href="categories.html">Categories</a>
+                <a href="search.html?filter=new">New Releases</a>
+                <a href="profile.html">My List</a>
+            </div>
+
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                 <!-- Search Bar Component -->
+                 <search-bar></search-bar>
+                 <button class="hamburger" id="hamburger-menu" aria-label="Menu">☰</button>
+            </div>
         </nav>
     </header>
 
     <navigation-drawer id="nav-drawer"></navigation-drawer>
 
-    <error-boundary id="main-error-boundary">
-        <main id="main-content" style="display: none;">
-            <section class="hero">
-                <div class="featured-video parallax-bg" id="featured-video">
-                    <!-- Featured video will be dynamically inserted here -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2940&auto=format&fit=crop" class="hero-bg" alt="Hero Background">
+            <div class="hero-content" id="featured-video">
+                <h1 class="hero-title">Discover Premium Content</h1>
+                <p class="hero-description">Stream thousands of exclusive videos in 4K quality. Join today for the ultimate experience.</p>
+                <div>
+                    <button class="btn-primary">Play Now</button>
+                    <button class="btn-secondary">More Info</button>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <section id="login-banner" class="login-banner" style="display: none;">
-                <div class="login-banner-content">
-                    <h2>Login/Signup to Access All Videos</h2>
-                    <p>Unlock the full library of videos by creating an account or logging in.</p>
-                    <div class="login-banner-buttons">
-                        <a href="login.html" class="btn btn-primary">Login</a>
-                        <a href="login.html" class="btn btn-secondary">Sign Up</a>
-                    </div>
-                </div>
-            </section>
+        <!-- Categories / Carousels (Static placeholders for now, could be dynamic) -->
+        <section class="container" style="position: relative; z-index: 10;">
 
-            <section class="video-grid">
-                <h2>All Videos</h2>
-                <error-boundary>
-                    <div class="grid-container" id="main-video-grid">
-                        <!-- Video thumbnails will be dynamically inserted here -->
-                    </div>
-                </error-boundary>
-                <div id="pagination-container">
-                    <!-- Pagination will be dynamically inserted here -->
+            <!-- Login Banner handled by JS -->
+            <div id="login-banner" style="display:none; margin-bottom: 2rem; background: #222; padding: 1.5rem; border-radius: 4px; border-left: 4px solid var(--text-accent);">
+                <h3 style="margin-bottom: 0.5rem;">Unlock Full Access</h3>
+                <p style="margin-bottom: 1rem; font-size: 0.9rem;">Join Blueberry to access over 120,000 videos without limits.</p>
+                <a href="login.html" class="btn-primary" style="font-size: 0.8rem;">Sign Up Now</a>
+            </div>
+
+            <div class="video-grid">
+                <h2 style="margin-bottom: 1rem; font-size: 1.5rem;">Trending Now</h2>
+                <div class="grid-container" id="main-video-grid">
+                    <!-- Dynamic Content -->
                 </div>
-            </section>
-        </main>
-    </error-boundary>
+            </div>
+
+            <!-- Limit Banner Area -->
+            <div id="limit-banner-container"></div>
+
+            <div id="pagination-container" style="margin-top: 3rem; display: flex; justify-content: center;"></div>
+        </section>
+    </main>
 
     <footer>
-        <p>&copy; 2025 Blueberry. All rights reserved. | <a href="terms.html">Terms of Service</a> | <a href="privacy.html">Privacy Policy</a> | <a href="about.html">Credits</a></p>
-        <p>Blueberry displays embedded videos from Pornhub and is not for content creators.</p>
+        <div class="container" style="padding-top: 4rem; padding-bottom: 2rem; text-align: center; color: var(--text-secondary); font-size: 0.8rem;">
+            <div style="margin-bottom: 1rem;">
+                <a href="terms.html" style="margin: 0 10px; color: var(--text-secondary);">Terms of Service</a>
+                <a href="privacy.html" style="margin: 0 10px; color: var(--text-secondary);">Privacy Policy</a>
+                <a href="help.html" style="margin: 0 10px; color: var(--text-secondary);">Help Center</a>
+            </div>
+            <p>&copy; 2025 Blueberry. All rights reserved.</p>
+        </div>
     </footer>
 
-    <script type="module" src="src/services/data-service.js"></script>
-    <script type="module" src="src/components/search-bar.js"></script>
-    <script type="module" src="src/components/navigation-drawer.js"></script>
-    <script type="module" src="src/components/error-boundary.js"></script>
-    <script type="module" src="src/components/video-thumbnail.js"></script>
-    <script type="module" src="main.js"></script>
-
+    <script>
+        // Simple script to handle sticky header effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('main-header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    </script>
 </body>
 </html>

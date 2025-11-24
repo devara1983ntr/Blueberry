@@ -1,3 +1,23 @@
+const FALLBACK_TRANSLATIONS = {
+    "search": {
+        "placeholder": "Search videos...",
+        "filters": "Filters",
+        "durationLabel": "Duration",
+        "categoryLabel": "Category",
+        "categoryPlaceholder": "Filter by category",
+        "applyFilters": "Apply Filters",
+        "durationAny": "Any",
+        "durationShort": "Short (< 5 min)",
+        "durationMedium": "Medium (5-20 min)",
+        "durationLong": "Long (> 20 min)"
+    },
+    "common": {
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "noResults": "No results found"
+    }
+};
+
 class I18n {
     constructor() {
         this.currentLanguage = 'en';
@@ -11,9 +31,11 @@ class I18n {
             this.currentLanguage = stored;
         }
         await this.loadTranslations(this.currentLanguage);
-        // If translations failed to load and we fell back to English, update current language
-        if (this.currentLanguage !== 'en' && Object.keys(this.translations).length === 0) {
-            this.currentLanguage = 'en';
+
+        // If translations are empty (e.g., failed load), ensure we have fallbacks
+        if (Object.keys(this.translations).length === 0) {
+            console.warn('Using fallback translations.');
+            this.translations = FALLBACK_TRANSLATIONS;
         }
     }
 
@@ -39,11 +61,27 @@ class I18n {
             if (!response.ok) {
                 throw new Error(`Failed to load translations for ${lang}`);
             }
-            this.translations = await response.json();
+
+            // Read as text first to check for LFS pointer
+            const text = await response.text();
+
+            if (text.startsWith('version https://git-lfs')) {
+                console.warn(`Translation file for ${lang} is a Git LFS pointer. using fallbacks.`);
+                this.translations = FALLBACK_TRANSLATIONS;
+                return;
+            }
+
+            try {
+                this.translations = JSON.parse(text);
+            } catch (e) {
+                console.error(`Invalid JSON for ${lang}:`, e);
+                this.translations = FALLBACK_TRANSLATIONS;
+            }
+
         } catch (error) {
             console.error('Error loading translations:', error);
-            // Fallback to empty translations
-            this.translations = {};
+            // Fallback to embedded English translations
+            this.translations = FALLBACK_TRANSLATIONS;
         }
     }
 
@@ -53,8 +91,20 @@ class I18n {
         for (const k of keys) {
             value = value && value[k];
         }
+
+        // If not found in current translations, try fallback
         if (typeof value !== 'string') {
-            console.warn(`Translation key not found: ${key}`);
+            let fallbackValue = FALLBACK_TRANSLATIONS;
+            for (const k of keys) {
+                fallbackValue = fallbackValue && fallbackValue[k];
+            }
+            if (typeof fallbackValue === 'string') {
+                value = fallbackValue;
+            }
+        }
+
+        if (typeof value !== 'string') {
+            // console.warn(`Translation key not found: ${key}`);
             return key;
         }
         // Interpolate variables
