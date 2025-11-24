@@ -29,28 +29,23 @@ class IframeVideoAdapter extends VideoControlsPort {
         // Pornhub iframes do not support programmatic play/pause via postMessage
         // This is a simulation; in reality, controls are handled by iframe
         this.isPlaying = true;
-        console.log('Play requested - iframe controls playback');
     }
 
     pause() {
         this.isPlaying = false;
-        console.log('Pause requested - iframe controls playback');
     }
 
     setVolume(volume) {
         this.volume = volume;
         // Volume control not possible with iframe
-        console.log('Volume set to', volume, '- not supported by iframe');
     }
 
     toggleMute() {
         this.muted = !this.muted;
-        console.log('Mute toggled to', this.muted, '- not supported by iframe');
     }
 
     seek(time) {
         this.currentTime = time;
-        console.log('Seek to', time, '- not supported by iframe');
     }
 
     enterFullscreen() {
@@ -711,7 +706,6 @@ class VideoPlayer extends HTMLElement {
         this.qualityDropdown.classList.remove('show');
         this.updateUI();
         this.saveSettings();
-        console.log('Quality changed to', quality, '- simulated (iframe limitation)');
     }
 
     // Subtitles toggle
@@ -719,7 +713,6 @@ class VideoPlayer extends HTMLElement {
         this.subtitlesEnabled = !this.subtitlesEnabled;
         this.updateUI();
         this.saveSettings();
-        console.log('Subtitles', this.subtitlesEnabled ? 'enabled' : 'disabled', '- simulated (iframe limitation)');
     }
 
     // Playback speed control
@@ -727,7 +720,6 @@ class VideoPlayer extends HTMLElement {
         this.playbackSpeed = Math.max(0.25, Math.min(4.0, this.playbackSpeed + delta));
         this.updateUI();
         this.saveSettings();
-        console.log('Playback speed set to', this.playbackSpeed, '- simulated (iframe limitation)');
     }
 
     // Picture-in-picture mode
@@ -769,7 +761,6 @@ class VideoPlayer extends HTMLElement {
         this.isLooping = !this.isLooping;
         this.updateUI();
         this.saveSettings();
-        console.log('Loop mode', this.isLooping ? 'enabled' : 'disabled', '- simulated (iframe limitation)');
     }
 
     // Auto-play next video
@@ -777,12 +768,10 @@ class VideoPlayer extends HTMLElement {
         this.autoplayNext = !this.autoplayNext;
         this.updateUI();
         this.saveSettings();
-        console.log('Auto-play next', this.autoplayNext ? 'enabled' : 'disabled');
     }
 
     // Screenshot capture (simulated)
     takeScreenshot() {
-        console.log('Screenshot captured - simulated (iframe limitation)');
         showToast('Screenshot saved to gallery');
     }
 

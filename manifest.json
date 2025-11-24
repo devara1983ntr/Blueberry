@@ -1,3 +1,21 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:b4102c10c7d5084c37fec689152bb8e5a99700e61062d1fcd6a808cc54a18ce0
-size 545
+{
+  "name": "Blueberry - Premium Streaming",
+  "short_name": "Blueberry",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#e94560",
+  "description": "Discover and stream high-quality adult videos on Blueberry.",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
