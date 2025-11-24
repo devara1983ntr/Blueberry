@@ -428,8 +428,13 @@ class SearchBar extends HTMLElement {
         applyFiltersButton.addEventListener('click', () => {
             const duration = this.shadowRoot.querySelector('#duration-filter').value;
             const category = this.shadowRoot.querySelector('#category-filter').value.trim();
-            // For now, just log the filters. In a real app, you'd apply them to search results.
-            console.log('Applying filters:', { duration, category });
+            // Navigate with filters
+            let url = `search.html?`;
+            const params = new URLSearchParams();
+            if (duration) params.append('duration', duration);
+            if (category) params.append('category', category);
+            window.location.href = url + params.toString();
+
             filtersDropdown.style.display = 'none';
             this.filtersOpen = false;
             filtersButton.setAttribute('aria-expanded', 'false');

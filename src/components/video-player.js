@@ -1,3 +1,5 @@
+import { showToast } from './toast.js';
+
 // Hexagonal Architecture: Ports
 class VideoControlsPort {
     play() { throw new Error('Not implemented'); }
@@ -27,28 +29,23 @@ class IframeVideoAdapter extends VideoControlsPort {
         // Pornhub iframes do not support programmatic play/pause via postMessage
         // This is a simulation; in reality, controls are handled by iframe
         this.isPlaying = true;
-        console.log('Play requested - iframe controls playback');
     }
 
     pause() {
         this.isPlaying = false;
-        console.log('Pause requested - iframe controls playback');
     }
 
     setVolume(volume) {
         this.volume = volume;
         // Volume control not possible with iframe
-        console.log('Volume set to', volume, '- not supported by iframe');
     }
 
     toggleMute() {
         this.muted = !this.muted;
-        console.log('Mute toggled to', this.muted, '- not supported by iframe');
     }
 
     seek(time) {
         this.currentTime = time;
-        console.log('Seek to', time, '- not supported by iframe');
     }
 
     enterFullscreen() {
@@ -709,7 +706,6 @@ class VideoPlayer extends HTMLElement {
         this.qualityDropdown.classList.remove('show');
         this.updateUI();
         this.saveSettings();
-        console.log('Quality changed to', quality, '- simulated (iframe limitation)');
     }
 
     // Subtitles toggle
@@ -717,7 +713,6 @@ class VideoPlayer extends HTMLElement {
         this.subtitlesEnabled = !this.subtitlesEnabled;
         this.updateUI();
         this.saveSettings();
-        console.log('Subtitles', this.subtitlesEnabled ? 'enabled' : 'disabled', '- simulated (iframe limitation)');
     }
 
     // Playback speed control
@@ -725,7 +720,6 @@ class VideoPlayer extends HTMLElement {
         this.playbackSpeed = Math.max(0.25, Math.min(4.0, this.playbackSpeed + delta));
         this.updateUI();
         this.saveSettings();
-        console.log('Playback speed set to', this.playbackSpeed, '- simulated (iframe limitation)');
     }
 
     // Picture-in-picture mode
@@ -767,7 +761,6 @@ class VideoPlayer extends HTMLElement {
         this.isLooping = !this.isLooping;
         this.updateUI();
         this.saveSettings();
-        console.log('Loop mode', this.isLooping ? 'enabled' : 'disabled', '- simulated (iframe limitation)');
     }
 
     // Auto-play next video
@@ -775,13 +768,11 @@ class VideoPlayer extends HTMLElement {
         this.autoplayNext = !this.autoplayNext;
         this.updateUI();
         this.saveSettings();
-        console.log('Auto-play next', this.autoplayNext ? 'enabled' : 'disabled');
     }
 
     // Screenshot capture (simulated)
     takeScreenshot() {
-        console.log('Screenshot captured - simulated (iframe limitation)');
-        this.showToast('Screenshot saved to gallery');
+        showToast('Screenshot saved to gallery');
     }
 
     // Share with timestamp
@@ -789,7 +780,7 @@ class VideoPlayer extends HTMLElement {
         const currentTime = Math.floor(this.adapter.getCurrentTime());
         const url = `${window.location.href}?t=${currentTime}`;
         navigator.clipboard.writeText(url).then(() => {
-            this.showToast('Link with timestamp copied to clipboard');
+            showToast('Link with timestamp copied to clipboard');
         });
     }
 
@@ -1002,10 +993,10 @@ class VideoPlayer extends HTMLElement {
             // Tap gestures
             if (this.touchState.tapCount === 2) {
                 this.domain.togglePlayPause();
-                this.showToast('Play/Pause');
+                showToast('Play/Pause');
             } else if (this.touchState.tapCount === 3) {
                 this.domain.toggleFullscreen();
-                this.showToast('Fullscreen toggled');
+                showToast('Fullscreen toggled');
             }
         } else if (this.touchState.isSwiping) {
             const deltaX = touches[0].clientX - this.touchState.startX;
@@ -1015,7 +1006,7 @@ class VideoPlayer extends HTMLElement {
                 if (Math.abs(deltaX) > 50) {
                     const seekAmount = deltaX > 0 ? 10 : -10;
                     this.domain.seek(this.adapter.getCurrentTime() + seekAmount);
-                    this.showToast(`Seek ${seekAmount > 0 ? '+' : ''}${seekAmount}s`);
+                    showToast(`Seek ${seekAmount > 0 ? '+' : ''}${seekAmount}s`);
                 }
             } else {
                 // Vertical swipe
@@ -1024,20 +1015,20 @@ class VideoPlayer extends HTMLElement {
                         // Volume
                         const volumeChange = deltaY > 0 ? -0.1 : 0.1;
                         this.adapter.volume = Math.max(0, Math.min(1, this.adapter.volume + volumeChange));
-                        this.showToast(`Volume ${(this.adapter.volume * 100).toFixed(0)}%`);
+                        showToast(`Volume ${(this.adapter.volume * 100).toFixed(0)}%`);
                     } else if (this.touchState.touches.length === 2) {
                         // Brightness
                         const brightnessChange = deltaY > 0 ? -0.1 : 0.1;
                         this.touchState.brightness = Math.max(0.1, Math.min(1, this.touchState.brightness + brightnessChange));
                         this.applyBrightness();
-                        this.showToast(`Brightness ${Math.round(this.touchState.brightness * 100)}%`);
+                        showToast(`Brightness ${Math.round(this.touchState.brightness * 100)}%`);
                     }
                 }
             }
             // Check circular
             if (this.isCircularGesture(this.touchState.circularPath)) {
                 this.toggleLoop();
-                this.showToast('Loop toggled');
+                showToast('Loop toggled');
             }
         }
         // Reset
@@ -1076,9 +1067,9 @@ class VideoPlayer extends HTMLElement {
         if (this.playlist.length > 0) {
             const randomIndex = Math.floor(Math.random() * this.playlist.length);
             this.playVideoFromPlaylist(randomIndex);
-            this.showToast('Playing random video from playlist');
+            showToast('Playing random video from playlist');
         } else {
-            this.showToast('No playlist available for random navigation');
+            showToast('No playlist available for random navigation');
         }
     }
 
@@ -1107,26 +1098,6 @@ class VideoPlayer extends HTMLElement {
                 }
             }, 2000);
         });
-    }
-
-    // Toast notification
-    showToast(message) {
-        const toast = document.createElement('div');
-        toast.className = 'toast toast-info';
-        toast.textContent = message;
-        toast.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #2196F3;
-            color: white;
-            padding: 1rem;
-            border-radius: 4px;
-            z-index: 1000;
-            max-width: 300px;
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => document.body.removeChild(toast), 3000);
     }
 
     // Initialize component

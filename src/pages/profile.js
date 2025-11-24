@@ -3,7 +3,7 @@ import { onAuthStateChange, logout, getCurrentUser } from '../services/auth-serv
 import { getWatchHistory, getFavorites, getSettings, updateSettings, removeFromFavorites } from '../services/data-service.js';
 import { getLocalHistoryVideoIds } from '../services/local-history-service.js';
 import { getVideosByIds, getVideoById } from '../utils/data-loader.js';
-import '../components/toast.js';
+import { showToast } from '../components/toast.js';
 import '../components/loading-spinner.js';
 
 // Profile page functionality

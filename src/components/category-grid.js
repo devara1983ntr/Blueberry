@@ -1,4 +1,4 @@
-import '../components/toast.js';
+import { showToast } from '../components/toast.js';
 
 class CategoryGrid extends HTMLElement {
     constructor() {

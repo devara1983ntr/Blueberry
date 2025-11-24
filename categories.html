@@ -4,53 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Categories - Blueberry</title>
-    <meta name="description" content="Browse video categories on Blueberry. Explore trending and featured categories for adult content.">
-    <meta name="keywords" content="video categories, adult categories, blueberry categories, streaming">
-    <meta property="og:title" content="Categories - Blueberry">
-    <meta property="og:description" content="Browse video categories on Blueberry. Explore trending and featured categories for adult content.">
-    <meta property="og:image" content="/manifest-icon-512.png">
-    <meta property="og:url" content="https://blueberry-app.com/categories.html">
-    <meta property="og:type" content="website">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="src/styles/main.css">
 
-    <!-- Firebase CDN -->
-    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js"></script>
+    <link rel="stylesheet" href="src/styles/variables.css">
+    <link rel="stylesheet" href="src/styles/style.css">
+
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
+
+    <script type="module" src="src/pages/categories.js"></script>
+
+    <style>
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+        }
+
+        .category-card {
+            height: 120px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            z-index: 2;
+        }
+
+        /* Shine effect */
+        .category-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+            transform: skewX(-20deg);
+            transition: 0.5s;
+        }
+
+        .category-card:hover::after {
+            left: 100%;
+        }
+    </style>
 </head>
 <body>
-    <header>
+
+    <header id="main-header" style="background-color: var(--bg-primary);">
         <nav>
-            <div class="logo">
-                <a href="/">Blueberry</a>
+            <div class="logo"><a href="/">BLUEBERRY</a></div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="categories.html" class="active">Categories</a>
+                <a href="search.html?filter=new">New Releases</a>
+                <a href="profile.html">My List</a>
             </div>
-            <search-bar></search-bar>
-            <button class="hamburger" id="hamburger-menu">☰</button>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                 <search-bar></search-bar>
+                 <button class="hamburger" id="hamburger-menu">☰</button>
+            </div>
         </nav>
     </header>
 
     <navigation-drawer id="nav-drawer"></navigation-drawer>
 
-    <main>
-        <section class="categories-section">
-            <h1>Browse Categories</h1>
-            <error-boundary>
-                <category-grid></category-grid>
-            </error-boundary>
-        </section>
+    <main class="container">
+        <h1 style="margin-top: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">Browse Categories</h1>
+
+        <div id="categories-grid" class="category-grid">
+            <!-- Categories injected by JS -->
+        </div>
     </main>
 
     <footer>
-        <p>&copy; 2025 Blueberry. All rights reserved.</p>
+        <div class="container" style="padding: 2rem 0; text-align: center;">
+            <p>&copy; 2025 Blueberry.</p>
+        </div>
     </footer>
-
-    <script src="src/components/error-boundary.js"></script>
-    <script type="module" src="src/components/search-bar.js"></script>
-    <script src="src/components/video-thumbnail.js"></script>
-    <script type="module" src="src/components/navigation-drawer.js"></script>
-    <script src="src/components/category-grid.js"></script>
-    <script src="src/pages/categories.js"></script>
 </body>
 </html>

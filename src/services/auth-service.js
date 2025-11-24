@@ -3,12 +3,6 @@
 // The adapter is Firebase Auth implementation
 
 import { auth } from '../config/firebase.js';
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged
-} from 'firebase/auth';
 
 /**
  * Authenticates a user with email and password.
@@ -22,7 +16,7 @@ export async function login(email, password) {
   }
 
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await auth.signInWithEmailAndPassword(email, password);
     return userCredential;
   } catch (error) {
     console.error('Login error:', error);
@@ -61,7 +55,7 @@ export async function register(email, password) {
   }
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
     return userCredential;
   } catch (error) {
     console.error('Registration error:', error);
@@ -86,7 +80,7 @@ export async function register(email, password) {
  */
 export async function logout() {
   try {
-    await signOut(auth);
+    await auth.signOut();
   } catch (error) {
     console.error('Logout error:', error);
 
@@ -104,7 +98,7 @@ export async function logout() {
  * @returns {function} Unsubscribe function
  */
 export function onAuthStateChange(callback) {
-  return onAuthStateChanged(auth, callback);
+  return auth.onAuthStateChanged(callback);
 }
 
 /**
