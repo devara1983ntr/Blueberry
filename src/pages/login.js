@@ -1,6 +1,6 @@
 // src/pages/login.js
 import { login, register, onAuthStateChange } from '../services/auth-service.js';
-import '../components/toast.js';
+import { showToast } from '../components/toast.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');

@@ -1,5 +1,5 @@
 // src/pages/settings.js
-import '../components/toast.js';
+import { showToast } from '../components/toast.js';
 import { getCurrentUser } from '../services/auth-service.js';
 import { getSettings, updateSettings } from '../services/data-service.js';
 import { i18n } from '../utils/i18n.js';
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('parental-controls-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        await saveParentalControls();
+        await saveParentalControls(modal);
     });
 });
 
@@ -198,7 +198,7 @@ async function hashPIN(pin) {
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-async function saveParentalControls() {
+async function saveParentalControls(modal) {
     try {
         const user = getCurrentUser();
         let settings = {};

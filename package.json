@@ -1,3 +1,26 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ea8d6a304f189b872c9a053da5449baebbb768169cb929d08ae29b7c48a18e4a
-size 1554
+{
+  "name": "blueberry",
+  "version": "1.0.0",
+  "description": "Blueberry - Premium Streaming",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint src"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "eslint": "^8.50.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFiles": ["<rootDir>/jest.setup.js"],
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    }
+  }
+}

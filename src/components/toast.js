@@ -1,4 +1,4 @@
-class Toast extends HTMLElement {
+export class Toast extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
@@ -123,3 +123,7 @@ class Toast extends HTMLElement {
 }
 
 customElements.define('blueberry-toast', Toast);
+
+export function showToast(message, type = 'info', duration = 5000) {
+    Toast.showToast(message, type, duration);
+}
