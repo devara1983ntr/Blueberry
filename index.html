@@ -40,19 +40,19 @@
             <div style="display: flex; gap: 1rem; align-items: center;">
                  <!-- Search Bar Component -->
                  <search-bar></search-bar>
-                 <button class="hamburger" id="hamburger-menu" aria-label="Menu">☰</button>
+                 <button class="hamburger" id="hamburger-menu" aria-label="Open navigation menu">☰</button>
             </div>
         </nav>
     </header>
 
     <navigation-drawer id="nav-drawer"></navigation-drawer>
 
-    <main>
+    <main id="main-content">
         <!-- Hero Section -->
-        <section class="hero">
-            <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2940&auto=format&fit=crop" class="hero-bg" alt="Hero Background">
+        <section class="hero" aria-labelledby="hero-title">
+            <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2940&auto=format&fit=crop" class="hero-bg" alt="Abstract background image for the hero section.">
             <div class="hero-content" id="featured-video">
-                <h1 class="hero-title">Discover Premium Content</h1>
+                <h1 class="hero-title" id="hero-title">Discover Premium Content</h1>
                 <p class="hero-description">Stream thousands of exclusive videos in 4K quality. Join today for the ultimate experience.</p>
                 <div>
                     <button class="btn-primary">Play Now</button>
@@ -104,6 +104,17 @@
                 header.classList.add('scrolled');
             } else {
                 header.classList.remove('scrolled');
+            }
+        });
+
+        // Hamburger menu functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburger = document.getElementById('hamburger-menu');
+            const navDrawer = document.getElementById('nav-drawer');
+            if (hamburger && navDrawer) {
+                hamburger.addEventListener('click', () => {
+                    navDrawer.toggle();
+                });
             }
         });
     </script>
