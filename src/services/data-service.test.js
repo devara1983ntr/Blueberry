@@ -1,28 +1,30 @@
-import { getWatchHistory, addToWatchHistory, getFavorites, addToFavorites, removeFromFavorites, getSettings, updateSettings } from './data-service.js';
+// Move mocks above imports using doMock to ensure hoisting
 
-// Mock global firebase
-global.firebase = {
-  firestore: jest.fn(() => ({
+// Define mocks
+const mockFirestore = {
     collection: jest.fn(),
     doc: jest.fn(),
-    getDoc: jest.fn(),
-    setDoc: jest.fn(),
-    updateDoc: jest.fn(),
-    getDocs: jest.fn(),
-    query: jest.fn(),
-    where: jest.fn(),
-    orderBy: jest.fn(),
-    limit: jest.fn()
-  }))
+    FieldValue: {
+        arrayUnion: jest.fn(val => ['union', val]),
+        arrayRemove: jest.fn(val => ['remove', val])
+    }
 };
+
+// Mock global firebase and window.firebase
+global.firebase = {
+  firestore: jest.fn(() => mockFirestore)
+};
+global.firebase.firestore.FieldValue = mockFirestore.FieldValue;
+global.window = { firebase: global.firebase };
 
 // Mock config
 jest.mock('../config/firebase.js', () => ({
-  db: global.firebase.firestore()
+  db: mockFirestore
 }));
 
+const { getWatchHistory, addToWatchHistory, getFavorites, addToFavorites, removeFromFavorites, getSettings, updateSettings } = require('./data-service.js');
+
 describe('Data Service', () => {
-  let mockDb;
   let mockCollection;
   let mockDoc;
   let mockGetDoc;
@@ -32,61 +34,53 @@ describe('Data Service', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockDb = global.firebase.firestore();
 
     mockGetDoc = jest.fn();
     mockSetDoc = jest.fn();
     mockUpdateDoc = jest.fn();
     mockGetDocs = jest.fn();
 
+    // Setup doc mock
     mockDoc = jest.fn(() => ({
         get: mockGetDoc,
         set: mockSetDoc,
-        update: mockUpdateDoc
+        update: mockUpdateDoc,
+        collection: mockCollection // For nested collections
     }));
 
+    // Setup collection mock
     mockCollection = jest.fn(() => ({
-        doc: mockDoc,
-        // query methods
-    }));
-
-    mockDb.collection.mockReturnValue(mockCollection()); // Incorrect chaining mock?
-    // Correct mocking:
-    mockDb.collection = jest.fn(() => ({
         doc: mockDoc,
         where: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         get: mockGetDocs
     }));
-    mockDb.doc = mockDoc;
 
-    // For compat API, db.collection('users').doc('uid')
+    mockFirestore.collection = mockCollection;
+    mockFirestore.doc = mockDoc;
   });
-
-  // Note: Testing implementation details of compat wrapper might be tricky.
-  // Assuming data-service uses compat API: db.collection(...).doc(...)
 
   describe('getWatchHistory', () => {
     it('should return watch history', async () => {
-      const mockData = { history: [{ videoId: '1', timestamp: 123 }] };
-      mockGetDoc.mockResolvedValue({
-        exists: true,
-        data: () => mockData
+      const mockData = { videoId: '1', timestamp: '123' };
+      mockGetDocs.mockResolvedValue({
+        forEach: (cb) => cb({ data: () => mockData })
       });
 
       const result = await getWatchHistory('uid');
 
-      expect(mockDb.collection).toHaveBeenCalledWith('users');
+      expect(mockFirestore.collection).toHaveBeenCalledWith('users');
       expect(mockDoc).toHaveBeenCalledWith('uid');
-      expect(mockGetDoc).toHaveBeenCalled();
-      expect(result).toEqual(mockData.history);
+      expect(mockCollection).toHaveBeenCalledWith('watchHistory');
+      expect(mockGetDocs).toHaveBeenCalled();
+      expect(result).toEqual([mockData]);
     });
 
     it('should return empty array if no history', async () => {
-      mockGetDoc.mockResolvedValue({
-        exists: false
-      });
+        mockGetDocs.mockResolvedValue({
+            forEach: (cb) => {}
+        });
 
       const result = await getWatchHistory('uid');
 
@@ -94,5 +88,74 @@ describe('Data Service', () => {
     });
   });
 
-  // ... skip other tests for brevity as pattern is same ...
+  describe('addToFavorites', () => {
+      it('should add video to favorites', async () => {
+          mockUpdateDoc.mockResolvedValue({});
+
+          await addToFavorites('uid', 'vid1');
+
+          expect(mockFirestore.collection).toHaveBeenCalledWith('users');
+          expect(mockDoc).toHaveBeenCalledWith('uid');
+          expect(mockUpdateDoc).toHaveBeenCalledWith({
+              favorites: ['union', 'vid1']
+          });
+      });
+  });
+
+  describe('removeFromFavorites', () => {
+      it('should remove video from favorites', async () => {
+          mockUpdateDoc.mockResolvedValue({});
+
+          await removeFromFavorites('uid', 'vid1');
+
+          expect(mockUpdateDoc).toHaveBeenCalledWith({
+              favorites: ['remove', 'vid1']
+          });
+      });
+  });
+
+  describe('getFavorites', () => {
+      it('should return favorites array', async () => {
+          mockGetDoc.mockResolvedValue({
+              exists: true,
+              data: () => ({ favorites: ['vid1'] })
+          });
+
+          const result = await getFavorites('uid');
+          expect(result).toEqual(['vid1']);
+      });
+
+      it('should return empty array if doc does not exist', async () => {
+          mockGetDoc.mockResolvedValue({
+              exists: false
+          });
+
+          const result = await getFavorites('uid');
+          expect(result).toEqual([]);
+      });
+  });
+
+  describe('getSettings', () => {
+      it('should return settings', async () => {
+          const settings = { theme: 'dark' };
+          mockGetDoc.mockResolvedValue({
+              exists: true,
+              data: () => ({ settings })
+          });
+
+          const result = await getSettings('uid');
+          expect(result).toEqual(settings);
+      });
+  });
+
+  describe('updateSettings', () => {
+      it('should update settings', async () => {
+          const settings = { theme: 'light' };
+          mockUpdateDoc.mockResolvedValue({});
+
+          await updateSettings('uid', settings);
+
+          expect(mockUpdateDoc).toHaveBeenCalledWith({ settings });
+      });
+  });
 });

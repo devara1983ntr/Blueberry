@@ -1,22 +1,9 @@
 // src/services/data-service.js
 // Hexagonal Architecture: This is the Data Port (interface)
-// The adapter is Firestore implementation
+// The adapter is Firestore implementation (Compat SDK)
 
 import { db } from '../config/firebase.js';
-import {
-  doc,
-  setDoc,
-  getDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-  collection,
-  query,
-  where,
-  getDocs,
-  orderBy,
-  limit
-} from 'firebase/firestore';
+import { firebase } from '../config/firebase.js'; // Assuming firebase global is available via config or window
 
 /**
  * Adds a video to user's favorites.
@@ -30,17 +17,28 @@ export async function addToFavorites(userId, videoId) {
   }
 
   try {
-    const userRef = doc(db, 'users', userId);
-    await updateDoc(userRef, {
-      favorites: arrayUnion(videoId)
+    const userRef = db.collection('users').doc(userId);
+    await userRef.update({
+      favorites: window.firebase.firestore.FieldValue.arrayUnion(videoId)
     });
   } catch (error) {
+    // If user doc doesn't exist, create it
+    if (error.code === 'not-found' || error.message.includes('No document to update')) {
+        try {
+            await db.collection('users').doc(userId).set({
+                favorites: [videoId]
+            }, { merge: true });
+            return;
+        } catch (innerError) {
+             console.error('Error creating user profile for favorites:', innerError);
+             throw new Error(`Failed to add video to favorites: ${innerError.message}`);
+        }
+    }
+
     console.error('Error adding to favorites:', error);
 
     if (error.code === 'permission-denied') {
       throw new Error('You do not have permission to modify favorites. Please log in again.');
-    } else if (error.code === 'not-found') {
-      throw new Error('User profile not found. Please try logging in again.');
     } else if (error.code === 'unavailable') {
       throw new Error('Service temporarily unavailable. Please check your connection and try again.');
     } else {
@@ -61,9 +59,9 @@ export async function removeFromFavorites(userId, videoId) {
   }
 
   try {
-    const userRef = doc(db, 'users', userId);
-    await updateDoc(userRef, {
-      favorites: arrayRemove(videoId)
+    const userRef = db.collection('users').doc(userId);
+    await userRef.update({
+      favorites: window.firebase.firestore.FieldValue.arrayRemove(videoId)
     });
   } catch (error) {
     console.error('Error removing from favorites:', error);
@@ -91,9 +89,9 @@ export async function getFavorites(userId) {
   }
 
   try {
-    const userRef = doc(db, 'users', userId);
-    const userSnap = await getDoc(userRef);
-    if (userSnap.exists()) {
+    const userRef = db.collection('users').doc(userId);
+    const userSnap = await userRef.get();
+    if (userSnap.exists) {
       return userSnap.data().favorites || [];
     }
     return [];
@@ -123,8 +121,8 @@ export async function addToWatchHistory(userId, videoId, timestamp = new Date())
   }
 
   try {
-    const historyRef = doc(collection(db, 'users', userId, 'watchHistory'), videoId);
-    await setDoc(historyRef, {
+    const historyRef = db.collection('users').doc(userId).collection('watchHistory').doc(videoId);
+    await historyRef.set({
       videoId,
       timestamp: timestamp.toISOString(),
       watchedAt: new Date()
@@ -156,9 +154,9 @@ export async function getWatchHistory(userId, limitCount = 50) {
   }
 
   try {
-    const historyRef = collection(db, 'users', userId, 'watchHistory');
-    const q = query(historyRef, orderBy('timestamp', 'desc'), limit(limitCount));
-    const querySnapshot = await getDocs(q);
+    const historyRef = db.collection('users').doc(userId).collection('watchHistory');
+    const q = historyRef.orderBy('timestamp', 'desc').limit(limitCount);
+    const querySnapshot = await q.get();
 
     const history = [];
     querySnapshot.forEach((doc) => {
@@ -190,9 +188,9 @@ export async function getSettings(userId) {
   }
 
   try {
-    const userRef = doc(db, 'users', userId);
-    const userSnap = await getDoc(userRef);
-    if (userSnap.exists()) {
+    const userRef = db.collection('users').doc(userId);
+    const userSnap = await userRef.get();
+    if (userSnap.exists) {
       return userSnap.data().settings || {};
     }
     return {};
@@ -225,17 +223,21 @@ export async function updateSettings(userId, settings) {
   }
 
   try {
-    const userRef = doc(db, 'users', userId);
-    await updateDoc(userRef, {
+    const userRef = db.collection('users').doc(userId);
+    await userRef.update({
       settings: settings
     });
   } catch (error) {
+    // Check if doc exists
+    if (error.code === 'not-found' || error.message.includes('No document to update')) {
+        await db.collection('users').doc(userId).set({ settings }, { merge: true });
+        return;
+    }
+
     console.error('Error updating settings:', error);
 
     if (error.code === 'permission-denied') {
       throw new Error('You do not have permission to update settings. Please log in again.');
-    } else if (error.code === 'not-found') {
-      throw new Error('User profile not found. Please try logging in again.');
     } else if (error.code === 'unavailable') {
       throw new Error('Service temporarily unavailable. Please check your connection and try again.');
     } else {

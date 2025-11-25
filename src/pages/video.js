@@ -2,7 +2,8 @@ import { keyboardShortcuts } from '../utils/keyboard-shortcuts.js';
 import { getCurrentUser } from '../services/auth-service.js';
 import { addToWatchHistory, addToFavorites, removeFromFavorites, getFavorites, getSettings } from '../services/data-service.js';
 import { addToLocalHistory } from '../services/local-history-service.js';
-import { getRecommendations } from '../services/recommendation-service.js';
+import { getRelatedVideos } from '../services/recommendation-service.js';
+import { getVideoById } from '../utils/data-loader.js';
 
 // Hash PIN for parental controls
 async function hashPIN(pin) {
@@ -49,34 +50,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id') || '0';
 
-    // Load video data from full_data.json
-    let videos = [];
-    try {
-        const response = await fetch('full_data.json');
-        const data = await response.json();
-        videos = data.map((video, idx) => ({
-            id: `${idx}`,
-            title: video.title || 'Untitled',
-            thumbnail: video.thumbnail || '',
-            embed: video.embed || '',
-            tags: video.tags ? video.tags.split(';') : [],
-            categories: video.categories ? video.categories.split(';') : [],
-            performer: video.actors || '',
-            duration: video.duration || '',
-            views: video.views || '',
-            likes: video.likes || '',
-            dislikes: video.dislikes || ''
-        }));
-    } catch (error) {
-        console.error('Error loading video data:', error);
-        // Fallback
-        videos = [
-            { id: '0', title: 'Video not found', thumbnail: '', embed: '', tags: [], categories: [], performer: '', duration: '', views: '', likes: '', dislikes: '' }
-        ];
+    // Load current video
+    let currentVideo = await getVideoById(id);
+
+    if (!currentVideo) {
+        // Fallback if not found
+        currentVideo = {
+            id: id,
+            title: 'Video not found',
+            thumbnail: '',
+            embed: '',
+            tags: [],
+            categories: [],
+            performer: '',
+            duration: '',
+            views: '0',
+            likes: '0',
+            dislikes: '0'
+        };
+        showToast('error', 'Video not found');
     }
 
-    // Get current video
-    const currentVideo = videos.find(v => v.id === id) || videos[0];
     const videoId = currentVideo.id;
 
     // Check parental controls
@@ -248,21 +242,41 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Load recommendations
     try {
-        const recommendations = await getRecommendations(videoId, 10);
+        const recommendations = await getRelatedVideos(videoId, 10);
         const belowPlayerGrid = document.getElementById('below-player-recommendations-grid');
         const relatedGrid = document.getElementById('related-videos-grid');
 
         const populateRecommendations = (container, videos) => {
+            if (!container) return;
             container.innerHTML = '';
             videos.forEach(video => {
-                const thumbnail = document.createElement('video-thumbnail');
-                thumbnail.setAttribute('title', video.title);
-                thumbnail.setAttribute('thumbnail', video.thumbnail);
-                thumbnail.addEventListener('click', () => {
-                    // Navigate to video page
-                    window.location.href = `video.html?id=${video.id}`;
+                // Check if custom element exists, else fallback to div
+                // Assuming video-thumbnail is defined elsewhere or we use the div structure from home.js
+                // But home.js uses div with class 'video-card'.
+                // src/components/video-thumbnail.js might exist but I haven't seen it in file list.
+                // Wait, I didn't see video-thumbnail.js in components list.
+                // home.js uses div structure.
+                // But video.js used createElement('video-thumbnail').
+                // Let's check if video-thumbnail is defined.
+                // If not, I should use the standard card structure.
+                // For safety, I'll use the card structure from home.js if I'm not sure.
+
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.innerHTML = `
+                    <img src="${video.thumbnail}" loading="lazy" alt="${video.title}">
+                    <div class="duration">${video.duration}</div>
+                    <div class="content">
+                        <h3>${video.title}</h3>
+                        <div class="meta">
+                            <span>${video.views || '0'} views</span>
+                        </div>
+                    </div>
+                `;
+                card.addEventListener('click', () => {
+                     window.location.href = `video.html?id=${video.id}`;
                 });
-                container.appendChild(thumbnail);
+                container.appendChild(card);
             });
         };
 
@@ -294,16 +308,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const diff = touchStartX - touchEndX;
 
         if (Math.abs(diff) > swipeThreshold) {
-            const currentIndex = videos.findIndex(v => v.id === videoId);
+            const currentIdInt = parseInt(videoId, 10);
 
             if (diff > 0) {
                 // Swipe left - next video
-                const nextIndex = (currentIndex + 1) % videos.length;
-                window.location.href = `video.html?id=${videos[nextIndex].id}`;
+                const nextId = currentIdInt + 1;
+                window.location.href = `video.html?id=${nextId}`;
             } else {
                 // Swipe right - previous video
-                const prevIndex = currentIndex > 0 ? currentIndex - 1 : videos.length - 1;
-                window.location.href = `video.html?id=${videos[prevIndex].id}`;
+                const prevId = Math.max(0, currentIdInt - 1);
+                window.location.href = `video.html?id=${prevId}`;
             }
         }
     }
