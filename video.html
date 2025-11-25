@@ -30,20 +30,20 @@
 
     <navigation-drawer id="nav-drawer"></navigation-drawer>
 
-    <main class="video-page-container">
-        <div class="video-player-section">
+    <main class="video-page-container" id="main-content">
+        <div class="video-player-section" role="region" aria-label="Video Player and Metadata">
             <error-boundary>
-                <video-player embed=""></video-player>
+                <video-player embed="" role="application" aria-label="Interactive video player"></video-player>
             </error-boundary>
             <div class="video-metadata">
-                <h1 class="video-title"></h1>
+                <h1 class="video-title" id="video-title"></h1>
                 <div class="video-stats">
                     <span class="views"></span>
                     <span class="likes"></span>
-                    <button id="share-btn" class="share-btn" aria-label="Share video">📤 Share</button>
-                    <button id="favorite-btn" class="favorite-btn">❤️ Add to Favorites</button>
-                    <button id="add-to-playlist-btn" class="add-to-playlist-btn">📋 Add to Playlist</button>
-                    <button id="add-to-watch-later-btn" class="add-to-watch-later-btn">⏰ Watch Later</button>
+                    <button id="share-btn" class="share-btn" aria-label="Share this video">📤 Share</button>
+                    <button id="favorite-btn" class="favorite-btn" aria-label="Add this video to your favorites">❤️ Add to Favorites</button>
+                    <button id="add-to-playlist-btn" class="add-to-playlist-btn" aria-label="Add this video to your playlist">📋 Add to Playlist</button>
+                    <button id="add-to-watch-later-btn" class="add-to-watch-later-btn" aria-label="Add this video to your watch later list">⏰ Watch Later</button>
                 </div>
                 <div id="share-dropdown" class="share-dropdown" hidden>
                     <button class="share-option" data-platform="facebook" aria-label="Share on Facebook">📘 Facebook</button>
@@ -73,5 +73,17 @@
     <script src="src/components/video-player.js"></script>
     <script type="module" src="src/components/navigation-drawer.js"></script>
     <script src="src/pages/video.js"></script>
+    <script>
+        // Hamburger menu functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburger = document.getElementById('hamburger-menu');
+            const navDrawer = document.getElementById('nav-drawer');
+            if (hamburger && navDrawer) {
+                hamburger.addEventListener('click', () => {
+                    navDrawer.toggle();
+                });
+            }
+        });
+    </script>
 </body>
 </html>

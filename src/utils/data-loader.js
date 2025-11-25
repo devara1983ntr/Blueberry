@@ -16,55 +16,6 @@ export const GUEST_LIMIT = 3000;
 const fileCache = new Map();
 
 /**
- * Generates mock data for a given file index when the real data is unavailable (e.g. LFS pointer).
- * @param {number} fileIndex
- * @param {number} count
- * @returns {Array} Array of mock video objects
- */
-function generateMockData(fileIndex, count) {
-    const mockVideos = [];
-    const baseIndex = (fileIndex - 1) * count;
-
-    // Deterministic pseudo-random helper
-    const pseudoRandom = (seed) => {
-        const x = Math.sin(seed) * 10000;
-        return x - Math.floor(x);
-    };
-
-    const categories = ['Action', 'Comedy', 'Drama', 'Sci-Fi', 'Documentary', 'Thriller'];
-    const performers = ['Alice Smith', 'Bob Jones', 'Charlie Brown', 'Dana White'];
-
-    for (let i = 0; i < count; i++) {
-        const globalIndex = baseIndex + i;
-        const seed = globalIndex * 123.45;
-
-        // Pick a color based on index
-        const hue = Math.floor(pseudoRandom(seed) * 360);
-        const color = `hsl(${hue}, 70%, 50%)`;
-
-        // Generate duration
-        const minutes = Math.floor(pseudoRandom(seed + 1) * 30) + 1;
-        const seconds = Math.floor(pseudoRandom(seed + 2) * 60);
-        const duration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-
-        mockVideos.push({
-            id: `${globalIndex}`,
-            title: `Mock Video Title ${globalIndex}`,
-            thumbnail: `data:image/svg+xml;charset=UTF-8,%3Csvg width='320' height='180' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='320' height='180' fill='${encodeURIComponent(color)}' /%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='white'%3EVideo ${globalIndex}%3C/text%3E%3C/svg%3E`,
-            embed: `https://www.youtube.com/embed/dQw4w9WgXcQ`, // Safe placeholder
-            tags: ['mock', 'test', 'video'],
-            categories: [categories[Math.floor(pseudoRandom(seed + 3) * categories.length)]],
-            performer: performers[Math.floor(pseudoRandom(seed + 4) * performers.length)],
-            duration: duration,
-            views: Math.floor(pseudoRandom(seed + 5) * 100000).toLocaleString(),
-            likes: Math.floor(pseudoRandom(seed + 6) * 5000),
-            dislikes: Math.floor(pseudoRandom(seed + 7) * 100)
-        });
-    }
-    return mockVideos;
-}
-
-/**
  * Loads a specific video file by its 1-based index.
  * @param {number} fileIndex
  * @returns {Promise<Array>} Array of video objects
@@ -85,37 +36,25 @@ async function loadVideoFile(fileIndex) {
         });
 
         if (!response.ok) {
-            console.warn(`HTTP ${response.status} for ${filePath}. Using mock data.`);
-            const mocks = generateMockData(fileIndex, VIDEOS_PER_FILE);
-            fileCache.set(fileIndex, mocks);
-            return mocks;
+            throw new Error(`Failed to fetch ${filePath}: ${response.statusText}`);
         }
 
         // Read text first to check for LFS pointer
         const text = await response.text();
 
         if (text.startsWith('version https://git-lfs')) {
-            console.warn(`File ${filePath} is a Git LFS pointer. Using mock data.`);
-            const mocks = generateMockData(fileIndex, VIDEOS_PER_FILE);
-            fileCache.set(fileIndex, mocks);
-            return mocks;
+            throw new Error(`File ${filePath} is a Git LFS pointer. Please pull the full file.`);
         }
 
         let data;
         try {
             data = JSON.parse(text);
         } catch (e) {
-            console.warn(`Invalid JSON in ${filePath}. Using mock data.`, e);
-            const mocks = generateMockData(fileIndex, VIDEOS_PER_FILE);
-            fileCache.set(fileIndex, mocks);
-            return mocks;
+            throw new Error(`Invalid JSON in ${filePath}: ${e.message}`);
         }
 
         if (!Array.isArray(data)) {
-             console.warn(`Invalid data format in ${filePath}. Using mock data.`);
-             const mocks = generateMockData(fileIndex, VIDEOS_PER_FILE);
-             fileCache.set(fileIndex, mocks);
-             return mocks;
+             throw new Error(`Invalid data format in ${filePath}. Expected an array.`);
         }
 
         const baseIndex = (fileIndex - 1) * VIDEOS_PER_FILE;
@@ -149,10 +88,7 @@ async function loadVideoFile(fileIndex) {
 
     } catch (error) {
         console.error(`Error loading file ${fileIndex}:`, error);
-        // Fallback to mock data on network error
-        const mocks = generateMockData(fileIndex, VIDEOS_PER_FILE);
-        fileCache.set(fileIndex, mocks);
-        return mocks;
+        throw error; // Re-throw the error to be handled by the caller
     }
 }
 
