@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /login.html
+Disallow: /profile.html
+
+Sitemap: /sitemap.xml

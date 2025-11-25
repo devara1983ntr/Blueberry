@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "prebuild": "rm -rf dist && mkdir -p dist",
+    "build": "find src -name '*.js' -print0 | xargs -0 -I{} bash -c 'mkdir -p dist/$(dirname {}) && terser {} -o dist/{} --compress --mangle' && mkdir -p dist/src/styles && cp -r src/styles/* dist/src/styles && purgecss --css dist/src/styles/*.css --content index.html src/**/*.js --output dist/src/styles"
   },
   "dependencies": {
     "firebase": "^12.6.0"
@@ -15,8 +17,12 @@
     "@babel/preset-env": "^7.23.0",
     "babel-jest": "^29.7.0",
     "eslint": "^8.50.0",
+    "firebase-tools": "^14.26.0",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0"
+    "jest-environment-jsdom": "^29.7.0",
+    "purgecss": "^7.0.2",
+    "sharp": "^0.34.5",
+    "terser": "^5.44.1"
   },
   "jest": {
     "testEnvironment": "jsdom",
@@ -25,6 +31,10 @@
     ],
     "transform": {
       "^.+\\.js$": "babel-jest"
-    }
+    },
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/dist/"
+    ]
   }
 }

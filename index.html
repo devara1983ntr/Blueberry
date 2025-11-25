@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="src/styles/card.css">
     <link rel="stylesheet" href="src/styles/style.css">
 
-    <link rel="icon" href="src/assets/logo.svg" type="image/svg+xml">
+    <link rel="icon" href="src/assets/generated/favicon.ico" type="image/x-icon">
 
     <!-- Firebase SDK (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -18,9 +18,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
 
-    <script type="module" src="src/components/navigation-drawer.js"></script>
-    <script type="module" src="src/components/search-bar.js"></script>
-    <script type="module" src="src/pages/home.js"></script>
+    <script type="module" src="dist/src/components/navigation-drawer.js"></script>
+    <script type="module" src="dist/src/components/search-bar.js"></script>
+    <script type="module" src="dist/src/pages/home.js"></script>
 </head>
 <body>
 
@@ -40,23 +40,27 @@
             <div style="display: flex; gap: 1rem; align-items: center;">
                  <!-- Search Bar Component -->
                  <search-bar></search-bar>
-                 <button class="hamburger" id="hamburger-menu" aria-label="Menu">☰</button>
+                 <button class="hamburger" id="hamburger-menu" aria-label="Open navigation menu">☰</button>
             </div>
         </nav>
     </header>
 
     <navigation-drawer id="nav-drawer"></navigation-drawer>
 
-    <main>
+    <main id="main-content">
         <!-- Hero Section -->
-        <section class="hero">
-            <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2940&auto=format&fit=crop" class="hero-bg" alt="Hero Background">
-            <div class="hero-content" id="featured-video">
-                <h1 class="hero-title">Discover Premium Content</h1>
-                <p class="hero-description">Stream thousands of exclusive videos in 4K quality. Join today for the ultimate experience.</p>
-                <div>
-                    <button class="btn-primary">Play Now</button>
-                    <button class="btn-secondary">More Info</button>
+        <section class="hero" aria-labelledby="hero-title">
+            <div id="featured-video" itemscope itemtype="http://schema.org/VideoObject">
+                <meta itemprop="uploadDate" content="2023-10-27T08:00:00+08:00" />
+                <meta itemprop="duration" content="PT15M33S" />
+                <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2940&auto=format&fit=crop" class="hero-bg" alt="Abstract background image for the hero section." itemprop="thumbnailUrl">
+                <div class="hero-content">
+                    <h1 class="hero-title" id="hero-title" itemprop="name">Discover Premium Content</h1>
+                    <p class="hero-description" itemprop="description">Stream thousands of exclusive videos in 4K quality. Join today for the ultimate experience.</p>
+                    <div>
+                        <button class="btn-primary">Play Now</button>
+                        <button class="btn-secondary">More Info</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -104,6 +108,17 @@
                 header.classList.add('scrolled');
             } else {
                 header.classList.remove('scrolled');
+            }
+        });
+
+        // Hamburger menu functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburger = document.getElementById('hamburger-menu');
+            const navDrawer = document.getElementById('nav-drawer');
+            if (hamburger && navDrawer) {
+                hamburger.addEventListener('click', () => {
+                    navDrawer.toggle();
+                });
             }
         });
     </script>

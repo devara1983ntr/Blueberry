@@ -221,7 +221,7 @@ class NavigationDrawer extends HTMLElement {
             <div class="drawer" role="dialog" aria-labelledby="drawer-title" aria-modal="true">
                 <div class="header">
                     <div class="logo">
-                        <img src="/src/assets/logo.svg" alt="Blueberry Logo">
+                        <img src="/src/assets/generated/logo-medium.png" alt="Blueberry Logo">
                     </div>
                     <button class="close-btn" id="close-btn" aria-label="Close navigation drawer">×</button>
                 </div>

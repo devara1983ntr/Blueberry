@@ -127,7 +127,7 @@ class CategoryGrid extends HTMLElement {
             console.error('Error loading categories:', error);
             showToast('error', 'Failed to Load Categories', error.message);
             this.gridElement.innerHTML = `
-                <div class="loading" style="color: #dc3545; cursor: pointer;" onclick="location.reload()">
+                <div class="loading" style="color: #ff4d4d; cursor: pointer;" onclick="location.reload()">
                     Error loading categories. Click to retry.
                 </div>
             `;

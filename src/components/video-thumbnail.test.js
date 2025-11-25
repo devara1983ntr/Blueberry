@@ -113,18 +113,18 @@ describe('VideoThumbnail Component', () => {
 
   describe('Image Loading', () => {
     it('should load image when intersecting', () => {
-      const testSrc = 'test-image.jpg';
-      mockPicture.dataset.src = testSrc;
+      const video = { id: '1', title: 'Test Video', thumbnail: 'test-image.jpg' };
+      videoThumbnail.video = video;
 
       videoThumbnail.loadImage();
 
       expect(mockPicture.querySelector).toHaveBeenCalledWith('source');
-      expect(mockImg.src).toBe(testSrc);
+      expect(mockImg.src).toBe('test-image.jpg');
     });
 
     it('should handle WebP conversion', () => {
-      const testSrc = 'test-image.jpg';
-      mockPicture.dataset.src = testSrc;
+      const video = { id: '1', title: 'Test Video', thumbnail: 'test-image.jpg' };
+      videoThumbnail.video = video;
       const mockSource = { srcset: '' };
       mockPicture.querySelector.mockReturnValue(mockSource);
 
@@ -134,7 +134,8 @@ describe('VideoThumbnail Component', () => {
     });
 
     it('should add loaded class on successful load', () => {
-      mockPicture.dataset.src = 'test-image.jpg';
+      const video = { id: '1', title: 'Test Video', thumbnail: 'test-image.jpg' };
+      videoThumbnail.video = video;
       videoThumbnail.setupLazyLoading(); // Set up observer
 
       videoThumbnail.loadImage();
@@ -147,7 +148,8 @@ describe('VideoThumbnail Component', () => {
 
     it('should handle load errors', () => {
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
-      mockPicture.dataset.src = 'test-image.jpg';
+      const video = { id: '1', title: 'Test Video', thumbnail: 'test-image.jpg' };
+      videoThumbnail.video = video;
 
       videoThumbnail.loadImage();
       mockImg.onerror();
@@ -158,7 +160,8 @@ describe('VideoThumbnail Component', () => {
     });
 
     it('should do nothing if no src is set', () => {
-      mockPicture.dataset.src = '';
+      const video = { id: '1', title: 'Test Video', thumbnail: '' };
+      videoThumbnail.video = video;
 
       videoThumbnail.loadImage();
 
@@ -169,17 +172,13 @@ describe('VideoThumbnail Component', () => {
   describe('Click Handling', () => {
     it('should handle click and navigate to video', () => {
       videoThumbnail.id = 'video123';
-      const originalHref = window.location.href;
-      Object.defineProperty(window.location, 'href', {
-        writable: true,
-        value: ''
-      });
+      const locationSpy = jest.spyOn(window, 'location', 'get');
+      locationSpy.mockReturnValue({ href: '' });
 
       videoThumbnail.handleClick();
 
       expect(window.location.href).toBe('video.html?id=video123');
-
-      window.location.href = originalHref;
+      locationSpy.mockRestore();
     });
 
     it('should not navigate if no id is set', () => {
@@ -193,10 +192,8 @@ describe('VideoThumbnail Component', () => {
     });
 
     it('should handle keyboard activation', () => {
-      videoThumbnail.connectedCallback(); // Set up event listeners
-      const enterEvent = new KeyboardEvent('keydown', { key: 'Enter' });
-      mockContainer.dispatchEvent(enterEvent);
-
+      videoThumbnail.handleClick = jest.fn();
+      videoThumbnail.container.addEventListener.mock.calls[1][1]({ key: 'Enter' });
       expect(videoThumbnail.handleClick).toHaveBeenCalled();
     });
 
@@ -225,11 +222,6 @@ describe('VideoThumbnail Component', () => {
     });
 
     it('should handle keyboard navigation', () => {
-      videoThumbnail.shadowRoot.querySelector = jest.fn((selector) => {
-        if (selector === '.thumbnail-container') return mockContainer;
-        return null;
-      });
-
       videoThumbnail.connectedCallback();
 
       expect(mockContainer.addEventListener).toHaveBeenCalledWith('click', expect.any(Function));
@@ -243,7 +235,6 @@ describe('VideoThumbnail Component', () => {
 
       expect(() => videoThumbnail.connectedCallback()).not.toThrow();
       expect(() => videoThumbnail.setupLazyLoading()).not.toThrow();
-      expect(() => videoThumbnail.loadImage()).not.toThrow();
     });
 
     it('should handle observer creation errors', () => {

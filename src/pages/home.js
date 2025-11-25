@@ -2,6 +2,7 @@ import '../components/loading-spinner.js';
 import '../components/toast.js';
 import '../components/pagination.js';
 import '../components/limit-reached-banner.js';
+import '../components/video-thumbnail.js';
 import { getCurrentUser, onAuthStateChange } from '../services/auth-service.js';
 import { initAgeVerification } from '../utils/age-verification.js';
 
@@ -112,7 +113,7 @@ async function loadPage(page, maxTotal) {
 
     } catch (error) {
         console.error('Error loading video data:', error);
-        mainGrid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #dc3545; padding: 1rem;">Unable to load video content. Please check your connection and try again.</div>';
+        mainGrid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #ff4d4d; padding: 1rem;">Unable to load video content. Please check your connection and try again.</div>';
     }
 }
 
@@ -126,25 +127,9 @@ function displayVideos(videos) {
 
     mainGrid.innerHTML = '';
     videos.forEach(video => {
-        // Create card structure matching card.css
-        const card = document.createElement('div');
-        card.className = 'video-card';
-        card.innerHTML = `
-            <img src="${video.thumbnail}" loading="lazy" alt="${video.title}">
-            <div class="duration">${video.duration}</div>
-            <div class="content">
-                <h3>${video.title}</h3>
-                <div class="meta">
-                    <span>${video.views || '0'} views</span>
-                </div>
-            </div>
-        `;
-
-        card.addEventListener('click', () => {
-             window.location.href = `video.html?id=${video.id}`;
-        });
-
-        mainGrid.appendChild(card);
+        const thumbnail = document.createElement('video-thumbnail');
+        thumbnail.video = video;
+        mainGrid.appendChild(thumbnail);
     });
 }
 

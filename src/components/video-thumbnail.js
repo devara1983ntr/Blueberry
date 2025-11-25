@@ -73,6 +73,19 @@ class VideoThumbnail extends HTMLElement {
         this.hasShownErrorToast = false;
     }
 
+    set video(video) {
+        this.videoData = video;
+        this.id = video.id;
+        this.shadowRoot.querySelector('.title').textContent = video.title;
+        this.picture.dataset.src = video.thumbnail;
+        this.updateAltText(video.title);
+    }
+
+    updateAltText(altText) {
+        this.picture.setAttribute('alt', altText);
+        this.img.setAttribute('alt', altText);
+    }
+
     connectedCallback() {
         this.id = this.getAttribute('id') || '';
         this.setupLazyLoading();
