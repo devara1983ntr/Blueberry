@@ -572,7 +572,17 @@ class VideoPlayer extends HTMLElement {
 
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === 'embed') {
-            this.iframe.src = newValue;
+            if (newValue && newValue.includes('src=')) {
+                const srcMatch = newValue.match(/src="([^"]+)"/);
+                if (srcMatch && srcMatch[1]) {
+                    this.iframe.src = srcMatch[1];
+                } else {
+                    console.error('Could not extract src from embed code:', newValue);
+                    this.iframe.src = '';
+                }
+            } else {
+                this.iframe.src = newValue || '';
+            }
         }
     }
 
