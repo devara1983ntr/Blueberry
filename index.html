@@ -27,7 +27,7 @@
     <header id="main-header">
         <nav>
             <div class="logo">
-                <a href="/">BLUEBERRY</a>
+                <a href="/" aria-label="Blueberry homepage">BLUEBERRY</a>
             </div>
 
             <div class="nav-links">
@@ -53,13 +53,13 @@
             <div id="featured-video" itemscope itemtype="http://schema.org/VideoObject">
                 <meta itemprop="uploadDate" content="2023-10-27T08:00:00+08:00" />
                 <meta itemprop="duration" content="PT15M33S" />
-                <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2940&auto=format&fit=crop" class="hero-bg" alt="Abstract background image for the hero section." itemprop="thumbnailUrl">
+                <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2940&auto=format&fit=crop" class="hero-bg" alt="A collage of vibrant movie posters." itemprop="thumbnailUrl">
                 <div class="hero-content">
                     <h1 class="hero-title" id="hero-title" itemprop="name">Discover Premium Content</h1>
                     <p class="hero-description" itemprop="description">Stream thousands of exclusive videos in 4K quality. Join today for the ultimate experience.</p>
                     <div>
-                        <button class="btn-primary">Play Now</button>
-                        <button class="btn-secondary">More Info</button>
+                        <button class="btn-primary" aria-label="Play featured video">Play Now</button>
+                        <button class="btn-secondary" aria-label="More information about the featured video">More Info</button>
                     </div>
                 </div>
             </div>
@@ -72,7 +72,7 @@
             <div id="login-banner" style="display:none; margin-bottom: 2rem; background: #222; padding: 1.5rem; border-radius: 4px; border-left: 4px solid var(--text-accent);">
                 <h3 style="margin-bottom: 0.5rem;">Unlock Full Access</h3>
                 <p style="margin-bottom: 1rem; font-size: 0.9rem;">Join Blueberry to access over 120,000 videos without limits.</p>
-                <a href="login.html" class="btn-primary" style="font-size: 0.8rem;">Sign Up Now</a>
+                <a href="login.html" class="btn-primary" style="font-size: 0.8rem;" aria-label="Sign up to unlock full access">Sign Up Now</a>
             </div>
 
             <div class="video-grid">
@@ -89,12 +89,12 @@
         </section>
     </main>
 
-    <footer>
+    <footer role="contentinfo">
         <div class="container" style="padding-top: 4rem; padding-bottom: 2rem; text-align: center; color: var(--text-secondary); font-size: 0.8rem;">
             <div style="margin-bottom: 1rem;">
-                <a href="terms.html" style="margin: 0 10px; color: var(--text-secondary);">Terms of Service</a>
-                <a href="privacy.html" style="margin: 0 10px; color: var(--text-secondary);">Privacy Policy</a>
-                <a href="help.html" style="margin: 0 10px; color: var(--text-secondary);">Help Center</a>
+                <a href="terms.html" style="margin: 0 10px; color: var(--text-secondary);" aria-label="Read our Terms of Service">Terms of Service</a>
+                <a href="privacy.html" style="margin: 0 10px; color: var(--text-secondary);" aria-label="Read our Privacy Policy">Privacy Policy</a>
+                <a href="help.html" style="margin: 0 10px; color: var(--text-secondary);" aria-label="Visit our Help Center">Help Center</a>
             </div>
             <p>&copy; 2025 Blueberry. All rights reserved.</p>
         </div>

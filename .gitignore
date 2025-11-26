@@ -101,3 +101,6 @@ firebase-debug.log
 
 # CSV files (as originally specified)
 *.csv
+
+# Data files
+data/

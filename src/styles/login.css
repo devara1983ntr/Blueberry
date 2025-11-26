@@ -75,6 +75,8 @@ body {
 .form-switch a {
     color: #ffffff;
     text-decoration: none;
+    padding: 12px 0;
+    display: inline-block;
 }
 
 .form-switch a:hover {

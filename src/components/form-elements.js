@@ -44,7 +44,7 @@ class BlueberryInput extends HTMLElement {
                 }
             </style>
             <div class="input-container">
-                <label class="label" for="input"><slot name="label"></slot></label>
+                <label class="label" for="input"></label>
                 <input id="input" type="text">
                 <div class="error"></div>
             </div>
@@ -53,21 +53,29 @@ class BlueberryInput extends HTMLElement {
         this.shadowRoot.appendChild(template.content.cloneNode(true));
 
         this.input = this.shadowRoot.querySelector('input');
+        this.labelEl = this.shadowRoot.querySelector('.label');
         this.errorEl = this.shadowRoot.querySelector('.error');
     }
 
     connectedCallback() {
+        // Link the label to the input
+        const inputId = 'input-' + Math.random().toString(36).substr(2, 9);
+        this.input.id = inputId;
+        this.labelEl.setAttribute('for', inputId);
+
         this.input.addEventListener('input', () => this.dispatchEvent(new Event('input')));
         this.input.addEventListener('change', () => this.dispatchEvent(new Event('change')));
     }
 
     static get observedAttributes() {
-        return ['type', 'placeholder', 'value', 'disabled', 'error'];
+        return ['type', 'placeholder', 'value', 'disabled', 'error', 'label'];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === 'type') {
             this.input.type = newValue || 'text';
+        } else if (name === 'label') {
+            this.labelEl.textContent = newValue;
         } else if (name === 'placeholder') {
             this.input.placeholder = newValue || '';
         } else if (name === 'value') {
@@ -198,7 +206,7 @@ class BlueberrySelect extends HTMLElement {
                 }
             </style>
             <div class="select-container">
-                <label class="label" for="select"><slot name="label"></slot></label>
+                <label class="label" for="select"></label>
                 <select id="select">
                     <slot></slot>
                 </select>
@@ -217,12 +225,14 @@ class BlueberrySelect extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['value', 'disabled', 'error'];
+        return ['value', 'disabled', 'error', 'label'];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === 'value') {
             this.select.value = newValue || '';
+        } else if (name === 'label') {
+            this.shadowRoot.querySelector('.label').textContent = newValue;
         } else if (name === 'disabled') {
             this.select.disabled = this.hasAttribute('disabled');
         } else if (name === 'error') {
@@ -287,7 +297,7 @@ class BlueberryTextarea extends HTMLElement {
                 }
             </style>
             <div>
-                <label class="label" for="textarea"><slot name="label"></slot></label>
+                <label class="label" for="textarea"></label>
                 <textarea id="textarea"></textarea>
                 <div class="error"></div>
             </div>
@@ -305,12 +315,14 @@ class BlueberryTextarea extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['placeholder', 'value', 'disabled', 'rows', 'error'];
+        return ['placeholder', 'value', 'disabled', 'rows', 'error', 'label'];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === 'placeholder') {
             this.textarea.placeholder = newValue || '';
+        } else if (name === 'label') {
+            this.shadowRoot.querySelector('.label').textContent = newValue;
         } else if (name === 'value') {
             this.textarea.value = newValue || '';
         } else if (name === 'disabled') {
